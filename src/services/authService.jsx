@@ -1,13 +1,13 @@
 const API_URL = 'https://your-api-url.com/api'; // Replace with your actual API URL
 
-export const LoginHelper = async ({ email, password }) => {
+export const AuthHelper = async ({actionType, data}) => {
   try {
-    const response = await fetch(`${API_URL}/login`, {
+    const response = await fetch(`${API_URL}/${actionType}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify(data),
     });
 
     if (!response.ok) {

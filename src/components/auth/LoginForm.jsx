@@ -1,9 +1,10 @@
+
 import React from "react";
 import { useMutation } from "@tanstack/react-query";
 import * as Yup from "yup";
 import { loginAuth } from "../../store/authStore";
-import { LoginHelper } from '../../services/authService';
-
+import { AuthHelper } from "../../services/authService";
+import { Link } from "react-router-dom";
 
 const LoginForm = () => {
   const { email, password, setEmail, setPassword, setUser, setError, error } =
@@ -19,11 +20,12 @@ const LoginForm = () => {
   });
 
   const mutation = useMutation({
-    mutationFn:LoginHelper,
-    onSuccess: (data) => {},
-
+    mutationFn: AuthHelper,
+    onSuccess: (data) => {
+      // Handle successful login
+    },
     onError: (err) => {
-      setError(err.response?.data?.message || "Login failed");
+      setError({ general: err.response?.data?.message || "Login failed" });
     },
   });
 
@@ -34,49 +36,74 @@ const LoginForm = () => {
         { email, password },
         { abortEarly: false }
       );
-      mutation.mutate(validateData);
+      mutation.mutate({ actionType: "login", data: validateData });
     } catch (validationErrors) {
-      console.log(validationErrors);
       if (validationErrors instanceof Yup.ValidationError) {
-        setError(validationErrors.errors.join(', '));
-    } else {
-        setError('An unexpected error occurred');
-    }
+        const errorObject = {};
+        validationErrors.inner.forEach((error) => {
+          errorObject[error.path] = error.message;
+        });
+        setError(errorObject);
+      } else {
+        setError({ general: "An unexpected error occurred" });
+      }
     }
   };
 
   return (
-    <form onSubmit={handleLoginSubmit}>
+    <form onSubmit={handleLoginSubmit} className="space-y-6">
       <div>
-        <label htmlFor="email">Email</label>
-        <input
-          type="email"
-          name="email"
-          id="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        {error && error.includes("email") && <pre>{error}</pre>}
+        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+          Email
+        </label>
+        <div className="mt-1">
+          <input
+            type="email"
+            name="email"
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          />
+        </div>
+        {error.email && <p className="mt-2 text-sm text-red-600">{error.email}</p>}
       </div>
 
       <div>
-        <label htmlFor="email">Password</label>
-        <input
-          type="password"
-          name="password"
-          id="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        {error && error.includes("password") && <pre>{error}</pre>}
+        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+          Password
+        </label>
+        <div className="mt-1">
+          <input
+            type="password"
+            name="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          />
+        </div>
+        {error.password && <p className="mt-2 text-sm text-red-600">{error.password}</p>}
       </div>
 
-      <button type="submit" disabled={mutation.isLoading}>
-        {mutation.isLoading ? "Logging in..." : "Login"}
-      </button>
+      <div>
+        <button
+          type="submit"
+          disabled={mutation.isLoading}
+          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        >
+          {mutation.isLoading ? "Logging in..." : "Login"}
+        </button>
+      </div>
 
-      {error && !error.includes('email') && !error.includes('password') && (
-        <pre>{ error}</pre>
+      <div className="text-sm">
+        <Link to="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
+          Don't have an account? Sign up
+        </Link>
+      </div>
+
+      {error.general && (
+        <p className="mt-2 text-sm text-red-600">{error.general}</p>
       )}
     </form>
   );

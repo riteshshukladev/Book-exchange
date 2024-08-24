@@ -1,13 +1,40 @@
-import React from 'react'
-import LoginForm from '../components/auth/LoginForm'
+// import React from 'react'
+// import LoginForm from '../components/auth/LoginForm'
+// const Login = () => {
+//   return (
+//       <div>
+//           <div>
+//               <LoginForm/>
+//           </div>
+//     </div>
+//   )
+// }
+
+// export default Login
+
+
+import React from 'react';
+import LoginForm from '../components/auth/LoginForm';
+
 const Login = () => {
   return (
-      <div>
-          <div>
-              <LoginForm/>
-          </div>
-    </div>
-  )
-}
+    <div className="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <h2 className="mt-6 text-center text-3xl text-gray-900 font-semibold	">
+          Sign In
+        </h2>
+        <p className="mt-2 text-center text-sm text-gray-600">
+          Enter your credentials to access your account.
+        </p>
+      </div>
 
-export default Login
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          <LoginForm />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Login;
