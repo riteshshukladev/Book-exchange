@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import * as Yup from "yup";
@@ -9,15 +8,14 @@ import { useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 
 const LoginForm = () => {
-
   const { login } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (isAuthenticated()) {
-      navigate('/home');
+      navigate("/home");
     }
-  })
+  });
   const { email, password, setEmail, setPassword, setUser, setError, error } =
     loginAuth();
 
@@ -33,11 +31,11 @@ const LoginForm = () => {
   const mutation = useMutation({
     mutationFn: AuthHelper,
     onSuccess: (data) => {
-      setUser(user.data);
-      login(data.user);
+      setUser(data.email)
+      login(data.email);
     },
     onError: (err) => {
-      setError({ general: err.response?.data?.message || "Login failed" });
+      setError({ general: err.response?.data?.message  || "Login failed" });
     },
   });
 
@@ -48,6 +46,7 @@ const LoginForm = () => {
         { email, password },
         { abortEarly: false }
       );
+      console.log(validateData)
       mutation.mutate({ actionType: "login", data: validateData });
     } catch (validationErrors) {
       if (validationErrors instanceof Yup.ValidationError) {
@@ -65,7 +64,10 @@ const LoginForm = () => {
   return (
     <form onSubmit={handleLoginSubmit} className="space-y-6">
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="email"
+          className="block text-sm font-medium text-gray-700"
+        >
           Email
         </label>
         <div className="mt-1">
@@ -78,11 +80,16 @@ const LoginForm = () => {
             className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
         </div>
-        {error.email && <p className="mt-2 text-sm text-red-600">{error.email}</p>}
+        {error.email && (
+          <p className="mt-2 text-sm text-red-600">{error.email}</p>
+        )}
       </div>
 
       <div>
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="password"
+          className="block text-sm font-medium text-gray-700"
+        >
           Password
         </label>
         <div className="mt-1">
@@ -95,7 +102,9 @@ const LoginForm = () => {
             className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
         </div>
-        {error.password && <p className="mt-2 text-sm text-red-600">{error.password}</p>}
+        {error.password && (
+          <p className="mt-2 text-sm text-red-600">{error.password}</p>
+        )}
       </div>
 
       <div>
@@ -109,7 +118,10 @@ const LoginForm = () => {
       </div>
 
       <div className="text-sm">
-        <Link to="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
+        <Link
+          to="/signup"
+          className="font-medium text-indigo-600 hover:text-indigo-500"
+        >
           Don't have an account? Sign up
         </Link>
       </div>

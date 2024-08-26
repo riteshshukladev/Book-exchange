@@ -1,8 +1,11 @@
-const API_URL = 'https://your-api-url.com/api'; // Replace with your actual API URL
 
-export const AuthHelper = async ({actionType, data}) => {
+
+export const AuthHelper = async ({ actionType, data }) => {
+  console.log(`${import.meta.env.VITE_API_URL}/${actionType}`);
+  console.log(data, actionType);
   try {
-    const response = await fetch(`${API_URL}/${actionType}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/${actionType}`, {
+      
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -14,30 +17,32 @@ export const AuthHelper = async ({actionType, data}) => {
       throw new Error('HTTP error ' + response.status);
     }
 
-    const data = await response.json();
+    const responseData = await response.json();
     
-    if (data.token) {
-      localStorage.setItem('user', JSON.stringify(data.user));
-      localStorage.setItem('token', data.token);
+    if (responseData.token) {
+      localStorage.setItem('email', JSON.stringify(responseData.email));
+      localStorage.setItem('token', responseData.token);
     }
 
-    return data;
+    return responseData;
   } catch (error) {
     if (error instanceof TypeError) {
+      console.log(error.message);
       throw new Error('Network error: ' + error.message);
     } else {
+      console.log(error.message);
       throw new Error('An error occurred during login: ' + error.message);
     }
   }
 };
 
 export const logout = () => {
-  localStorage.removeItem('user');
+  localStorage.removeItem('email');
   localStorage.removeItem('token')
 };
 
 export const getCurrentUser = () => {
-  return JSON.parse(localStorage.getItem('user'));
+  return JSON.parse(localStorage.getItem('email'));
 };
 
 export const getToken = () => {

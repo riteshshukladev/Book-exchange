@@ -4,7 +4,7 @@ import { isAuthenticated, getCurrentUser } from '../services/authService';
 import { useState,useEffect } from 'react';
 const useAuth = () => {
 
-    const [user, setUser] = useState(null);
+    const [email, setEmail] = useState(null);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
@@ -12,9 +12,9 @@ const useAuth = () => {
     useEffect(() => {
         const checkAuth = () => {
           if (isAuthenticated()) {
-            setUser(getCurrentUser());
+            setEmail(getCurrentUser());
           } else {
-            setUser(null);
+            setEmail(null);
           }
           setLoading(false);
         };
@@ -23,17 +23,17 @@ const useAuth = () => {
     }, []);
     
 
-    const login = (userData) => {
-        setUser(userData);
+    const login = (setUserEmail) => {
+      setEmail(setUserEmail);
         navigate('/home');
       };
     
       const logout = () => {
-        setUser(null);
+        setEmail(null);
         navigate('/');
     };
     
-    return { user, loading, login, logout };
+    return { email, loading, login, logout };
 };
 
 
