@@ -17,13 +17,12 @@ export const AuthHelper = async ({actionType, data}) => {
     const data = await response.json();
     
     if (data.token) {
-      // Store the token in localStorage or a more secure storage method
-      localStorage.setItem('user', JSON.stringify(data));
+      localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem('token', data.token);
     }
 
     return data;
   } catch (error) {
-    // Handle and throw errors so they can be caught by the mutation
     if (error instanceof TypeError) {
       throw new Error('Network error: ' + error.message);
     } else {
@@ -34,9 +33,23 @@ export const AuthHelper = async ({actionType, data}) => {
 
 export const logout = () => {
   localStorage.removeItem('user');
-  // You might also want to make an API call to invalidate the token on the server
+  localStorage.removeItem('token')
 };
 
 export const getCurrentUser = () => {
   return JSON.parse(localStorage.getItem('user'));
 };
+
+export const getToken = () => {
+  return localStorage.getItem('token');
+}
+
+
+export const isAuthenticated = () => {
+  const token = getToken();
+  if (!token) {
+    return false;
+  }
+  return token;
+}
+

@@ -1,12 +1,23 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import * as Yup from "yup";
 import { loginAuth } from "../../store/authStore";
-import { AuthHelper } from "../../services/authService";
+import { AuthHelper, isAuthenticated } from "../../services/authService";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import useAuth from "../../hooks/useAuth";
 
 const LoginForm = () => {
+
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isAuthenticated()) {
+      navigate('/home');
+    }
+  })
   const { email, password, setEmail, setPassword, setUser, setError, error } =
     loginAuth();
 
@@ -22,7 +33,8 @@ const LoginForm = () => {
   const mutation = useMutation({
     mutationFn: AuthHelper,
     onSuccess: (data) => {
-      // Handle successful login
+      setUser(user.data);
+      login(data.user);
     },
     onError: (err) => {
       setError({ general: err.response?.data?.message || "Login failed" });

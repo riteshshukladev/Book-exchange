@@ -6,7 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { AuthHelper } from "../../services/authService";
 import { signUpAuth } from "../../store/authStore";
 import { Link } from "react-router-dom";
-
+import useAuth from "../../hooks/useAuth";
 const SignUpForm = () => {
   const {
     email,
@@ -22,10 +22,13 @@ const SignUpForm = () => {
     setconfirmpassword,
   } = signUpAuth();
 
+  const { login } = useAuth();
+
   const mutation = useMutation({
     mutationFn: AuthHelper,
     onSuccess: (data) => {
-      // Handle successful signup
+      setUser(data.name)
+      login(data.name);
     },
     onError: (err) => {
       setError({ general: err.response?.data?.message || "Signup failed" });
