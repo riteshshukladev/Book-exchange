@@ -5,7 +5,12 @@ import Login from "../src/pages/Login";
 import Signup from "../src/pages/Signup";
 import ProtectedRoute from "./components/protected-route/protectedRoute";
 import Home from "./pages/Home";
-
+// import BookLis from "./components/user-pages/MatchMaking";
+// import FilterBooks from "./components/user-pages/FilterBooks";
+import MatchMaking from './components/user-pages/MatchMaking'
+import BookListing from "./components/user-pages/BookListing";
+import FilterBooks from "./components/user-pages/FilterBooks";
+import Profile from "./components/user-pages/Profile";
 const queryClient = new QueryClient();
 
 function App() {
@@ -16,13 +21,18 @@ function App() {
           <Route path="/" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route
-            path="/home"
+            path="/*"
             element={
               <ProtectedRoute>
                 <Home />
               </ProtectedRoute>
             }
-          />
+          >
+            <Route path ="add-book" element = {<BookListing/>}/>
+            <Route path="book-filter" element={<FilterBooks />} />
+            <Route path="book-matchmaking" element={<MatchMaking />} />
+            <Route path="user-profile" element={<Profile />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
