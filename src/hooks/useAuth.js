@@ -25,7 +25,7 @@ const useAuth = () => {
 
     const login = (setUserEmail) => {
       setEmail(setUserEmail);
-        navigate('/home');
+        navigate('/add-book');
       };
     
       const logout = () => {
