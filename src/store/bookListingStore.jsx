@@ -31,7 +31,7 @@ export const useBookList = create((set) => ({
     openAddModal: () => set({ isAddModalOpen: true }),
     closeAddModal: () => set({ isAddModalOpen: false }),
   
-    openEditModal: (book) => set({ isEditModalOpen: true, currentBook: {...book } }),
+    openEditModal: (book) => set({ isEditModalOpen: true, currentBook: book }),
     closeEditModal: () => set({ isEditModalOpen: false, currentBook: null }),
   
     
