@@ -35,7 +35,7 @@ const LoginForm = () => {
       login(data.token);
     },
     onError: (err) => {
-      setError({ general: err.response?.data?.message  || "Login failed" });
+      setError({ general: err?.message  || "Login failed" });
     },
   });
 

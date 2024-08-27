@@ -14,13 +14,13 @@ export const AuthHelper = async ({ actionType, data }) => {
     });
 
     if (!response.ok) {
-      throw new Error('HTTP error ' + response.status);
+      throw new Error(`${response.message}:${response.status}`);
     }
 
     const responseData = await response.json();
     
     if (responseData.token) {
-      // localStorage.setItem('email', JSON.stringify(responseData.email));
+      
       localStorage.setItem('token', responseData.token);
     }
 
@@ -28,10 +28,10 @@ export const AuthHelper = async ({ actionType, data }) => {
   } catch (error) {
     if (error instanceof TypeError) {
       console.log(error.message);
-      throw new Error('Network error: ' + error.message);
+      throw new Error(error.message);
     } else {
       console.log(error.message);
-      throw new Error('An error occurred during login: ' + error.message);
+      throw new Error( error.message);
     }
   }
 };
