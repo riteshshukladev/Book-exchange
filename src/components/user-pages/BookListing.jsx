@@ -1,8 +1,17 @@
 import React from 'react'
+import { bookList } from '../../store/bookListingStore';
+
+
 
 const BookListing = () => {
+
+  const { books, isAddModalOpen, isEditModal, isDeleteModalOpen, newBook, currentBooks,setIsAddModalOpened,setIsDeleteModalOpen,setIsEditModal } = bookList();
+
+
   return (
-    <h1>BookListing</h1>
+    <section>
+
+  </section>
   )
 }
 
