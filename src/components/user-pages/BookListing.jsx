@@ -45,13 +45,14 @@ const BookListing = () => {
             <CardHeader>{book.title}</CardHeader>
             <CardContent>
               <p>{book.author}</p>
+              <p>{ book.Genre }</p>
               <div className="flex justify-end mt-2">
                 <Button
                   variant="outline"
                   size="sm"
                   className="mr-2"
                   onClick={() => {
-                    openEditModal;
+                    openEditModal(book)
                   }}
                 >
                   <Edit className="h-4 w-4" />
@@ -60,7 +61,7 @@ const BookListing = () => {
                   variant="destructive"
                   size="sm"
                   onClick={() => {
-                    openDeleteModal;
+                    openDeleteModal(book)
                   }}
                 >
                   <Trash2 className="h-4 w-4" />

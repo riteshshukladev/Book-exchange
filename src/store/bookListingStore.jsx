@@ -23,8 +23,8 @@ export const useBookList = create((set) => ({
 
 
 
-    setCurrentBookTitle: (title) => set((state) => ({ currentBook: { ...state.newBooks, title } })),
-    setCurrentBookAuthor: (autor) => set((state) => ({ currentBook: { ...state.currentBook, autor } })),
+    setCurrentBookTitle: (title) => set((state) => ({ currentBook: { ...state.currentBook, title } })),
+    setCurrentBookAuthor: (author) => set((state) => ({ currentBook: { ...state.currentBook, author } })),
     setCurrentBookGenre: (Genre) => set((state) => ({ currentBook: { ...state.currentBook, Genre } })),
     
 
