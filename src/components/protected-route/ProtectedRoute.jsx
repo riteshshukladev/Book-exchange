@@ -4,7 +4,7 @@ import useAuth from '../../hooks/useAuth'
 
 const ProtectedRoute = ({children}) => {
 
-    const { email, loading } = useAuth();
+    const { token, loading } = useAuth();
 
     if (loading) {
         return (
@@ -12,7 +12,7 @@ const ProtectedRoute = ({children}) => {
         );
     }
 
-    if (!email) {
+    if (!token) {
         return <Navigate to='/' replace/>
     }
 

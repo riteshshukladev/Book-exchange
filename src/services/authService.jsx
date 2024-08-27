@@ -20,7 +20,7 @@ export const AuthHelper = async ({ actionType, data }) => {
     const responseData = await response.json();
     
     if (responseData.token) {
-      localStorage.setItem('email', JSON.stringify(responseData.email));
+      // localStorage.setItem('email', JSON.stringify(responseData.email));
       localStorage.setItem('token', responseData.token);
     }
 
@@ -37,12 +37,12 @@ export const AuthHelper = async ({ actionType, data }) => {
 };
 
 export const logout = () => {
-  localStorage.removeItem('email');
+  // localStorage.removeItem('email');
   localStorage.removeItem('token')
 };
 
 export const getCurrentUser = () => {
-  return JSON.parse(localStorage.getItem('email'));
+  return localStorage.getItem('token');
 };
 
 export const getToken = () => {

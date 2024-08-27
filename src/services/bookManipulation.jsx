@@ -1,6 +1,6 @@
 import React from 'react'
 import { getCurrentUser } from './authService'
-const email = getCurrentUser();
+const token = getCurrentUser();
 import { useBookList } from '@/store/bookListingStore';
 
 
@@ -15,7 +15,7 @@ const fetchBooks = async () => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(email)
+            body: JSON.stringify(token)
         });
 
         if (!response.ok) {
@@ -35,9 +35,10 @@ const handleAddBook = async () => {
       await fetch('/api/books/add', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ newBook , email}),
+          body: JSON.stringify({ newBook , token}),
       });
-    //   setNewBook({ title: '', author: '' });
+      //   setNewBook({ title: '', author: '' });
+      // Lookup to clean the setNewBooks and newBook states
       fetchBooks();
     } catch (error) {
       console.error('Error adding book:', error);
@@ -50,7 +51,7 @@ const handleEditBook = async () => {
         await fetch(`/api/books/edit`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({currentBook,email}),
+            body: JSON.stringify({currentBook,token}),
       });
     //   setCurrentBook(null);
       fetchBooks();
@@ -66,7 +67,7 @@ const handleDeleteBook = async () => {
         const response = await fetch('api/books/delete', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ currentBook, email })
+            body: JSON.stringify({ currentBook, token })
         })
         if (!response.ok) {
             

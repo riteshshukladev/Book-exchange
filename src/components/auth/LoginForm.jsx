@@ -31,8 +31,8 @@ const LoginForm = () => {
   const mutation = useMutation({
     mutationFn: AuthHelper,
     onSuccess: (data) => {
-      setUser(data.email)
-      login(data.email);
+      setUser(data.token)
+      login(data.token);
     },
     onError: (err) => {
       setError({ general: err.response?.data?.message  || "Login failed" });

@@ -4,7 +4,7 @@ import { isAuthenticated, getCurrentUser } from '../services/authService';
 import { useState,useEffect } from 'react';
 const useAuth = () => {
 
-    const [email, setEmail] = useState(null);
+    const [token, setToken] = useState(null);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
@@ -12,9 +12,9 @@ const useAuth = () => {
     useEffect(() => {
         const checkAuth = () => {
           if (isAuthenticated()) {
-            setEmail(getCurrentUser());
+            setToken(getCurrentUser());
           } else {
-            setEmail(null);
+            setToken(null);
           }
           setLoading(false);
         };
@@ -23,17 +23,17 @@ const useAuth = () => {
     }, []);
     
 
-    const login = (setUserEmail) => {
-      setEmail(setUserEmail);
+    const login = (setUserToken) => {
+      setToken(setUserToken);
         navigate('/add-book');
       };
     
       const logout = () => {
-        setEmail(null);
+        setToken(null);
         navigate('/');
     };
     
-    return { email, loading, login, logout };
+    return { token, loading, login, logout };
 };
 
 
