@@ -3,13 +3,8 @@ import { create } from "zustand";
 export const useBookList = create((set) => ({
     books: [],
     isAddModalOpen: false,
-    isEditModal: false,
+    isEditModalOpen: false,
     isDeleteModalOpen: false,
-    currentBook: {
-        title: '',
-        author: '',
-        Genre: ''
-    },
     currentBook: {
         id:'',
         title: '',
@@ -36,7 +31,7 @@ export const useBookList = create((set) => ({
     openAddModal: () => set({ isAddModalOpen: true }),
     closeAddModal: () => set({ isAddModalOpen: false }),
   
-    openEditModal: (book) => set({ isEditModalOpen: true, currentBook: book }),
+    openEditModal: (book) => set({ isEditModalOpen: true, currentBook: {...book } }),
     closeEditModal: () => set({ isEditModalOpen: false, currentBook: null }),
   
     
