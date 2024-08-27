@@ -39,6 +39,6 @@ export const useBookList = create((set) => ({
     openDeleteModal: (book) => set({ isDeleteModalOpen: true, currentBook: book }),
     closeDeleteModal: () => set({ isDeleteModalOpen: false, currentBook: null }),
 
-
+    setBooks: (books) => set({ books })
 
 }));

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useBookList } from "../../store/bookListingStore";
 
 import { Button } from "../ui/button";
@@ -15,7 +15,7 @@ import { Label } from "../ui/label";
 import AddBookModal from "../modals/book-manipulation-modals/AddBookModal";
 import EditBookModal from "../modals/book-manipulation-modals/EditBookModal";
 import DeleteBookModal from "../modals/book-manipulation-modals/DeleteBookModal";
-
+import { fetchBooks } from "@/services/bookManipulation";
 import { Plus, Edit, Trash2 } from "lucide-react";
 
 const BookListing = () => {
@@ -30,6 +30,10 @@ const BookListing = () => {
     openEditModal,
     openDeleteModal,
   } = useBookList();
+
+  useEffect(() => {
+    fetchBooks();
+  });
 
   return (
     <div className="p-4">

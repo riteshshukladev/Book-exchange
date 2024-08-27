@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 
 import { useBookList } from "../../../store/bookListingStore";
-//import the API function
+import { handleEditBook } from '@/services/bookManipulation';
 
 const EditBookModal = () => {
   const {
@@ -49,13 +49,13 @@ const EditBookModal = () => {
         <div>
           <Label>Genre</Label>
           <Input
-            value={currentBook.title}
+            value={currentBook.Genre}
             onChange={(e) => setCurrentBookGenre(e.target.value)}
             placeholder="Book Author"
           />
         </div>
         <DialogFooter>
-          <Button onClick={''}>Save Changes</Button>
+          <Button onClick={handleEditBook}>Save Changes</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

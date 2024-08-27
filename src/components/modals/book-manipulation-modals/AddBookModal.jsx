@@ -6,7 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 
 import { useBookList } from '../../../store/bookListingStore';
-// Import the Api call function to the backend
+import { handleAddBook } from '@/services/bookManipulation';
+
 
 
 const AddBookModal = () => {
@@ -46,7 +47,7 @@ const AddBookModal = () => {
           />
         </div>
         <DialogFooter>
-          <Button onClick={console.log(`${newBooks.title} Hello`)}>Add Book</Button>
+          <Button onClick={handleAddBook}>Add Book</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -10,12 +10,12 @@ import {
   import { Button } from "@/components/ui/button";
   
   import { useBookList } from "../../../store/bookListingStore";
-import BookListing from "@/components/user-pages/BookListing";
 
-//   Add the function to delete the API
+
+import { handleDeleteBook } from "@/services/bookManipulation";
 
 const DeleteBookModal = () => {
-  const { isDeleteModalOpen, closeDeleteModal, currentBook } = BookListing();
+  const { isDeleteModalOpen, closeDeleteModal, currentBook } = useBookList();
 
   if (!currentBook) return null;
 
@@ -28,7 +28,7 @@ const DeleteBookModal = () => {
         <p>Are you sure you want to delete "{currentBook.title}" by {currentBook.author}?</p>
         <DialogFooter>
           <Button variant="outline" onClick={closeDeleteModal}>Cancel</Button>
-          <Button variant="destructive" onClick={''}>Delete</Button>
+          <Button variant="destructive" onClick={handleDeleteBook}>Delete</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
