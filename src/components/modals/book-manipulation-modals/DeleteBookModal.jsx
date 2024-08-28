@@ -10,14 +10,13 @@ import {
   import { Button } from "@/components/ui/button";
   
   import { useBookList } from "../../../store/bookListingStore";
-
-
-import { handleDeleteBook } from "@/services/bookManipulation";
+import BookManipulation from "@/services/bookManipulation";
 
 const DeleteBookModal = () => {
-  const { isDeleteModalOpen, closeDeleteModal, currentBook } = useBookList();
+  const { isDeleteModalOpen, closeDeleteModal, currentBook,setBooks } = useBookList();
 
   if (!currentBook) return null;
+  { console.log(currentBook.id)};
 
   return (
     <Dialog open={isDeleteModalOpen} onOpenChange={closeDeleteModal}>
@@ -28,7 +27,7 @@ const DeleteBookModal = () => {
         <p>Are you sure you want to delete "{currentBook.title}" by {currentBook.author}?</p>
         <DialogFooter>
           <Button variant="outline" onClick={closeDeleteModal}>Cancel</Button>
-          <Button variant="destructive" onClick={handleDeleteBook}>Delete</Button>
+          <Button variant="destructive" onClick={() => BookManipulation.handleDeleteBook(currentBook.id, setBooks)}>Delete</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

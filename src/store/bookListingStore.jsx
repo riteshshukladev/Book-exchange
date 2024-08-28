@@ -9,23 +9,23 @@ export const useBookList = create((set) => ({
         id:'',
         title: '',
         author: '',
-        Genre: ''
+        genre: ''
     },
     newBooks: {
         title: '',
         author: '',
-        Genre: ''
+        genre: ''
     },
 
     setNewBookTitle: (title) => set((state) => ({ newBooks: { ...state.newBooks, title } })),
     setNewBookAuthor: (author) => set((state) => ({ newBooks: { ...state.newBooks, author } })),
-    setNewBookGenre: (Genre) => set((state) => ({ newBooks: { ...state.newBooks, Genre } })),
+    setNewBookGenre: (genre) => set((state) => ({ newBooks: { ...state.newBooks, genre } })),
 
 
 
     setCurrentBookTitle: (title) => set((state) => ({ currentBook: { ...state.currentBook, title } })),
     setCurrentBookAuthor: (author) => set((state) => ({ currentBook: { ...state.currentBook, author } })),
-    setCurrentBookGenre: (Genre) => set((state) => ({ currentBook: { ...state.currentBook, Genre } })),
+    setCurrentBookGenre: (genre) => set((state) => ({ currentBook: { ...state.currentBook, genre } })),
     
 
     openAddModal: () => set({ isAddModalOpen: true }),
@@ -39,6 +39,7 @@ export const useBookList = create((set) => ({
     openDeleteModal: (book) => set({ isDeleteModalOpen: true, currentBook: book }),
     closeDeleteModal: () => set({ isDeleteModalOpen: false, currentBook: null }),
 
-    setBooks: (books) => set({ books })
-
+    setBooks: (books) => set((state) => {
+        return { books };
+    }),
 }));

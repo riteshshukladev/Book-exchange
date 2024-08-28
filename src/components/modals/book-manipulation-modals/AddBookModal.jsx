@@ -6,14 +6,15 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 
 import { useBookList } from '../../../store/bookListingStore';
-import { handleAddBook } from '@/services/bookManipulation';
+// import { handleAddBook } from '@/services/bookManipulation';
+import BookManipulation from '@/services/bookManipulation';
 
 
 
 const AddBookModal = () => {
 
 
-  const { isAddModalOpen, closeAddModal,newBooks,setNewBookTitle,setNewBookAuthor,setNewBookGenre } = useBookList();
+  const { isAddModalOpen, closeAddModal,newBooks,setNewBookTitle,setNewBookAuthor,setNewBookGenre,setBooks } = useBookList();
 
   return (
     <Dialog open={isAddModalOpen} onOpenChange={closeAddModal}>
@@ -41,13 +42,13 @@ const AddBookModal = () => {
         <div>
           <Label>Genre</Label>
           <Input
-            value={newBooks.Genre}
+            value={newBooks.genre}
             onChange={(e) => setNewBookGenre(e.target.value)}
             placeholder="Book Genre"
           />
         </div>
         <DialogFooter>
-          <Button onClick={handleAddBook}>Add Book</Button>
+          <Button onClick={() => BookManipulation.handleAddBook(newBooks,setBooks,closeAddModal)}>Add Book</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

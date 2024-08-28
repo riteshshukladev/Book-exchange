@@ -15,7 +15,8 @@ import { Label } from "../ui/label";
 import AddBookModal from "../modals/book-manipulation-modals/AddBookModal";
 import EditBookModal from "../modals/book-manipulation-modals/EditBookModal";
 import DeleteBookModal from "../modals/book-manipulation-modals/DeleteBookModal";
-import { fetchBooks } from "@/services/bookManipulation";
+// import {  } from "@/services/bookManipulation";
+import BookManipulation from "@/services/bookManipulation";
 import { Plus, Edit, Trash2 } from "lucide-react";
 
 const BookListing = () => {
@@ -29,12 +30,12 @@ const BookListing = () => {
     openAddModal,
     openEditModal,
     openDeleteModal,
+    setBooks
   } = useBookList();
 
   useEffect(() => {
-    fetchBooks();
-  });
-
+    BookManipulation.fetchBooks(setBooks);
+  }, []); 
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
@@ -44,6 +45,7 @@ const BookListing = () => {
         </Button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {console.log(books)}
         {books.map((book) => (
           <Card key={book.id}>
             <CardHeader>{book.title}</CardHeader>

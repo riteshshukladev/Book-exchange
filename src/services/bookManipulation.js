@@ -1,0 +1,114 @@
+import { getCurrentUser } from './authService';
+import { useBookList } from '@/store/bookListingStore';
+
+const BookManipulation = {
+  async fetchBooks(setBooks) {
+
+    
+    const user = getCurrentUser();
+    // if (!user || !user.token) return;
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/books`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user}`
+        },
+      });
+
+      if (!response.ok) {
+        console.log("in the response checking");
+        throw new Error('HTTP error ' + response.status + response.message);
+      }
+      const data = await response.json();
+
+      console.log(data);
+      console.log(`checking the ${data}`);
+      setBooks(data.data);
+    } catch (error) {
+      console.error('Error fetching books:', error);
+    }
+  },
+
+  async handleAddBook(newBook,setBooks,closeAddModal) {
+    // const { newBook, setNewBook } = useBookList();
+    const user = getCurrentUser();
+    console.log(user + newBook.title + newBook.author);
+    // if (!user || !user.token) return;
+    // console.log('in to the try lobby')
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/books/add`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user}`
+        },
+        body: JSON.stringify(newBook),
+      });
+
+      if (!response.ok) {
+        console.log("in the response checking");
+        throw new Error('HTTP error ' + response.status +response.message);
+      }
+
+      // setNewBook({ title: '', author: '', genre: [] });
+      closeAddModal;
+      console.log('out')
+      await this.fetchBooks(setBooks);
+    } catch (error) {
+      console.error('Error adding book:', error);
+    }
+  },
+
+  async handleEditBook(currentBook,setBooks) {
+   
+    const user = getCurrentUser();
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/books/edit`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user}`
+        },
+        body: JSON.stringify(currentBook),
+      });
+
+      if (!response.ok) {
+        console.log("in the response checking");
+        throw new Error('HTTP error ' + response.status);
+      }
+
+      // setCurrentBook(null);
+      await this.fetchBooks(setBooks);
+      console.log('in the body of edit')
+    } catch (error) {
+      console.error('Error editing book:', error);
+    }
+  },
+
+  async handleDeleteBook(id,setBooks) {
+    const user = getCurrentUser();
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/books/delete/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user}`
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('HTTP error ' + response.status);
+      }
+
+      await this.fetchBooks(setBooks);
+    } catch (error) {
+      console.error('Error deleting book:', error);
+    }
+  }
+};
+
+export default BookManipulation;

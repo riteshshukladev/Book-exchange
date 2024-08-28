@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 
 import { useBookList } from "../../../store/bookListingStore";
-import { handleEditBook } from '@/services/bookManipulation';
+import BookManipulation from "@/services/bookManipulation";
 
 const EditBookModal = () => {
   const {
@@ -20,6 +20,7 @@ const EditBookModal = () => {
     setCurrentBookTitle,
     setCurrentBookAuthor,
     setCurrentBookGenre,
+    setBooks
   } = useBookList();
 
   if (!currentBook) return null;
@@ -49,13 +50,13 @@ const EditBookModal = () => {
         <div>
           <Label>Genre</Label>
           <Input
-            value={currentBook.Genre}
+            value={currentBook.genre}
             onChange={(e) => setCurrentBookGenre(e.target.value)}
             placeholder="Book Author"
           />
         </div>
         <DialogFooter>
-          <Button onClick={handleEditBook}>Save Changes</Button>
+          <Button onClick={()=>BookManipulation.handleEditBook(currentBook,setBooks,closeEditModal)}>Save Changes</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
