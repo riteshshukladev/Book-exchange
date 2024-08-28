@@ -23,15 +23,14 @@ const BookManipulation = {
       }
       const data = await response.json();
 
-      console.log(data);
-      console.log(`checking the ${data}`);
+    
       setBooks(data.data);
     } catch (error) {
       console.error('Error fetching books:', error);
     }
   },
 
-  async handleAddBook(newBook,setBooks,closeAddModal) {
+  async handleAddBook(newBook,setBooks,closeAddModal,clearNewBook) {
     // const { newBook, setNewBook } = useBookList();
     const user = getCurrentUser();
     console.log(user + newBook.title + newBook.author);
@@ -53,15 +52,16 @@ const BookManipulation = {
       }
 
       // setNewBook({ title: '', author: '', genre: [] });
-      closeAddModal;
       console.log('out')
       await this.fetchBooks(setBooks);
+      clearNewBook();
+      closeAddModal();
     } catch (error) {
       console.error('Error adding book:', error);
     }
   },
 
-  async handleEditBook(currentBook,setBooks) {
+  async handleEditBook(currentBook,setBooks,closeEditModal) {
    
     const user = getCurrentUser();
 
@@ -80,15 +80,15 @@ const BookManipulation = {
         throw new Error('HTTP error ' + response.status);
       }
 
-      // setCurrentBook(null);
       await this.fetchBooks(setBooks);
+      closeEditModal();
       console.log('in the body of edit')
     } catch (error) {
       console.error('Error editing book:', error);
     }
   },
 
-  async handleDeleteBook(id,setBooks) {
+  async handleDeleteBook(id,setBooks,closeDeleteModal) {
     const user = getCurrentUser();
 
     try {
@@ -105,6 +105,7 @@ const BookManipulation = {
       }
 
       await this.fetchBooks(setBooks);
+      closeDeleteModal();
     } catch (error) {
       console.error('Error deleting book:', error);
     }

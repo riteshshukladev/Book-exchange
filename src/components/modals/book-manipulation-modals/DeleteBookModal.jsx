@@ -27,7 +27,7 @@ const DeleteBookModal = () => {
         <p>Are you sure you want to delete "{currentBook.title}" by {currentBook.author}?</p>
         <DialogFooter>
           <Button variant="outline" onClick={closeDeleteModal}>Cancel</Button>
-          <Button variant="destructive" onClick={() => BookManipulation.handleDeleteBook(currentBook.id, setBooks)}>Delete</Button>
+          <Button variant="destructive" onClick={() => BookManipulation.handleDeleteBook(currentBook.id, setBooks,closeDeleteModal)}>Delete</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

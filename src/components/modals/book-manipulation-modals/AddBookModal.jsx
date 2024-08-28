@@ -14,7 +14,7 @@ import BookManipulation from '@/services/bookManipulation';
 const AddBookModal = () => {
 
 
-  const { isAddModalOpen, closeAddModal,newBooks,setNewBookTitle,setNewBookAuthor,setNewBookGenre,setBooks } = useBookList();
+  const { isAddModalOpen, closeAddModal,newBooks,setNewBookTitle,setNewBookAuthor,setNewBookGenre,setBooks,clearNewBook } = useBookList();
 
   return (
     <Dialog open={isAddModalOpen} onOpenChange={closeAddModal}>
@@ -48,7 +48,7 @@ const AddBookModal = () => {
           />
         </div>
         <DialogFooter>
-          <Button onClick={() => BookManipulation.handleAddBook(newBooks,setBooks,closeAddModal)}>Add Book</Button>
+          <Button onClick={() => BookManipulation.handleAddBook(newBooks,setBooks,closeAddModal,clearNewBook)}>Add Book</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

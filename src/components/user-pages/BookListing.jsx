@@ -1,21 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { useBookList } from "../../store/bookListingStore";
 
+import React, { useEffect } from "react";
+import { useBookList } from "../../store/bookListingStore";
 import { Button } from "../ui/button";
-import { Card, CardContent, CardHeader } from "../ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "../ui/dialog";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
+import { Card, CardContent } from "../ui/card";
 import AddBookModal from "../modals/book-manipulation-modals/AddBookModal";
 import EditBookModal from "../modals/book-manipulation-modals/EditBookModal";
 import DeleteBookModal from "../modals/book-manipulation-modals/DeleteBookModal";
-// import {  } from "@/services/bookManipulation";
 import BookManipulation from "@/services/bookManipulation";
 import { Plus, Edit, Trash2 } from "lucide-react";
 
@@ -25,8 +15,6 @@ const BookListing = () => {
     isAddModalOpen,
     isEditModalOpen,
     isDeleteModalOpen,
-    currentBook,
-    newBooks,
     openAddModal,
     openEditModal,
     openDeleteModal,
@@ -36,39 +24,36 @@ const BookListing = () => {
   useEffect(() => {
     BookManipulation.fetchBooks(setBooks);
   }, []); 
+
   return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Your Books</h1>
-        <Button onClick={openAddModal}>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">Your Books</h1>
+        <Button onClick={openAddModal} className="bg-gray-900 text-white hover:bg-gray-700">
           <Plus className="mr-2 h-4 w-4" /> Add
         </Button>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {console.log(books)}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {books.map((book) => (
-          <Card key={book.id}>
-            <CardHeader>{book.title}</CardHeader>
-            <CardContent>
-              <p>{book.author}</p>
-              <p>{ book.Genre }</p>
-              <div className="flex justify-end mt-2">
+          <Card key={book.id} className="bg-white shadow-sm hover:shadow-md transition-shadow">
+            <CardContent className="p-4">
+              <h2 className="text-lg font-semibold text-gray-900 mb-2">Title: {book.title}</h2>
+              <p className="text-gray-600 mb-1">Author: {book.author}</p>
+              <p className="text-gray-600 mb-4">Genre: {book.genre}</p>
+              <div className="flex justify-end space-x-2">
                 <Button
                   variant="outline"
                   size="sm"
-                  className="mr-2"
-                  onClick={() => {
-                    openEditModal(book)
-                  }}
+                  className="text-gray-600 hover:text-gray-900"
+                  onClick={() => openEditModal(book)}
                 >
                   <Edit className="h-4 w-4" />
                 </Button>
                 <Button
                   variant="destructive"
                   size="sm"
-                  onClick={() => {
-                    openDeleteModal(book)
-                  }}
+                  className="bg-red-500 hover:bg-red-600 text-white"
+                  onClick={() => openDeleteModal(book)}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
