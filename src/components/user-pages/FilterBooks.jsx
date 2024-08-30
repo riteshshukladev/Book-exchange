@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import {
   Card,
   CardHeader,
@@ -15,6 +15,8 @@ import { useFilterBooks } from "@/store/filterBookStore";
 import { fetchInitialOfFilters } from "@/services/fetchBookService";
 import { isAuthenticated } from "@/services/authService";
 import { useNavigate } from "react-router-dom";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "../ui/badge";
 
 const FilterBooks = () => {
   const navigate = useNavigate();
@@ -30,12 +32,12 @@ const FilterBooks = () => {
     setSelectedAuthors,
     setSelectedGenres,
     setSearchTerm,
-    applyFilters,
     resetFilters,
     filteredBooks,
     setInitialAuthors,
     setInitialGenres,
     setFilteredBooks,
+    clearfilterstate
   } = useFilterBooks();
 
   useEffect(() => {
@@ -51,6 +53,25 @@ const FilterBooks = () => {
       navigate("/");
     }
   });
+
+
+  const applyFilters = useCallback(async () => {
+    const filters = {
+      authors: authors,
+      genres: genres,
+      searchTerm: searchTerm
+    };
+
+    try {
+      const filteredData = await fetchFilteredData(filters);
+      setFilteredBooks(filteredData);
+    }
+    catch (err) {
+      console.log('error while fetching books', err)
+    }
+  },[[selectedAuthors, selectedGenres, searchTerm, setFilteredBooks]])
+
+  console.log(filteredBooks)
 
   return (
     <div className="space-y-6">
@@ -102,7 +123,7 @@ const FilterBooks = () => {
             <Button
               className="w-full sm:w-auto"
               variant="outline"
-              onClick={resetFilters}
+              onClick={()=> clearfilterstate()}
             >
               Reset Filters
             </Button>
@@ -118,12 +139,29 @@ const FilterBooks = () => {
           <CardTitle>No books found</CardTitle>
           <CardDescription>Try adjusting your filters</CardDescription>
         </div>
-      ) : (
-        <div>
-          {filteredBooks.map((book) => (
-            <div key={book.id}>{book.title}</div>
-          ))}
-        </div>
+        ) : (
+          
+        <ScrollArea className="h-[400px] w-full rounded-md border">
+      <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {filteredBooks.map((book) => (
+          <Card key={book.id} className="w-full">
+            <CardHeader>
+              <CardTitle className="text-lg font-bold truncate">{book.title}</CardTitle>
+              <CardDescription className="text-sm text-gray-500">by {book.author}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Badge variant="secondary" className="mb-2">
+                {book.genre}
+              </Badge>
+              <p className="text-sm text-gray-600 truncate">{book.email}</p>
+            </CardContent>
+            <CardFooter className="text-xs text-gray-400">
+              ID: {book.id}
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
+    </ScrollArea>
       )}
     </div>
   );

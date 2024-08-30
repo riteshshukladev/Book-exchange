@@ -67,4 +67,6 @@ export const useFilterBooks = create((set) => ({
     set({ filteredBooks: books, isBookContentArrived: true }),
 
   setSearchTerm: (searchTerm) => set({ searchTerm }),
+
+  clearfilterstate: () => set({  selectedAuthors: [],  selectedGenres: [],  searchTerm: ""})
 }));

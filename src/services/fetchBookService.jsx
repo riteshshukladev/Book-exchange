@@ -34,9 +34,9 @@ export const fetchInitialOfFilters = async ({
       setFilteredBooks(formattedResult);
     } catch (err) {
       console.error("Error while fetching:", err);
-      // Set empty arrays in case of error to prevent undefined errors
-    //   setInitialAuthors([]);
-    //   setInitialGenres([]);
-    //   setFilteredBooks([]);
-    }
+
+  }
+  
+  
+
   };
