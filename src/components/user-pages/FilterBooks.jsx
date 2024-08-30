@@ -12,32 +12,42 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { ComboboxDemo } from "../ui/multiSelector";
 import { useFilterBooks } from "@/store/filterBookStore";
+import { fetchInitialOfFilters } from "@/services/fetchBookService";
+import { isAuthenticated } from "@/services/authService";
+import { useNavigate } from "react-router-dom";
 
 const FilterBooks = () => {
-  useEffect(() => {
-    fetchInitialsOfFilters();
-  });
-
+  const navigate = useNavigate();
   const {
     isAuthorContentArrived,
-    isGenreContendArrived,
+    isGenreContentArrived,
     isBookContentArrived,
-    retrievedAuthors,
-    retrivedGenre,
-    searchTerm,
-    genres,
     authors,
-    setSearchTerm,
+    genres,
+    selectedAuthors,
     selectedGenres,
-    setSelectedAuthor,
+    searchTerm,
+    setSelectedAuthors,
     setSelectedGenres,
-    selectedAuthor,
-    setAuthors,
-    setGenres
+    setSearchTerm,
+    applyFilters,
+    resetFilters,
+    filteredBooks,
   } = useFilterBooks();
+
+  useEffect(() => {
+    fetchInitialOfFilters({ initialSetAuthors, initialSetGenres,setArrivedContent });
+  }, [fetchInitialOfFilters]);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/');
+    }
+  })
+
   return (
     <div className="space-y-6">
-      <Card className=" w-auto">
+      <Card className="w-auto">
         <CardHeader>
           <CardTitle>Filter according to your need!</CardTitle>
           <CardDescription>
@@ -46,15 +56,15 @@ const FilterBooks = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="">
+            <div>
               <Label htmlFor="author-select" className="mb-2 block">
                 Filter By Author
               </Label>
               <ComboboxDemo
                 content={authors}
-                selectedContent={setAuthors}
-                isContentArrived = {isAuthorContentArrived}
-                
+                selectedContent={selectedAuthors}
+                setSelectedContent={setSelectedAuthors}
+                isContentArrived={isAuthorContentArrived}
                 placeholder="Select authors"
               />
             </div>
@@ -64,9 +74,9 @@ const FilterBooks = () => {
               </Label>
               <ComboboxDemo
                 content={genres}
-                selectedContent={setGenres}
-                isContentArrived = {isGenreContendArrived}
-
+                selectedContent={selectedGenres}
+                setSelectedContent={setSelectedGenres}
+                isContentArrived={isGenreContentArrived}
                 placeholder="Select genres"
               />
             </div>
@@ -74,19 +84,33 @@ const FilterBooks = () => {
           <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
             <Input
               type="text"
-              placeholder="Add Book Name"
+              placeholder="Search by book name"
               className="flex-grow"
               value={searchTerm}
-              onChange={() => setSearchTerm(e.target.value)}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <Button className="w-full sm:w-auto">Add Filters</Button>
+            <Button className="w-full sm:w-auto" onClick={applyFilters}>Apply Filters</Button>
+            <Button className="w-full sm:w-auto" variant="outline" onClick={resetFilters}>Reset Filters</Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* Content below the filter */}
-
-      {isBookContentArrived && <></>}
+      {/* Display filtered books */}
+      {!isBookContentArrived ? (
+        <div>Loading books...</div>
+      ) : filteredBooks.length === 0 ? (
+        <div>
+          <CardTitle>No books found</CardTitle>
+          <CardDescription>Try adjusting your filters</CardDescription>
+        </div>
+      ) : (
+        <div>
+          {/* Render your filtered books here */}
+          {filteredBooks.map((book) => (
+            <div key={book.id}>{book.title}</div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

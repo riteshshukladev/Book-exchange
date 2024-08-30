@@ -1,44 +1,35 @@
 import { create } from "zustand";
 
 export const useFilterBooks = create((set) => ({
-    // Will be used to set in the options
-    genres: [],
-    authors: [],
-    selectedAuthor: [],
-    selectedGenres: [], // Changed from selectedGenre to selectedGenres for consistency
-    searchTerm: '',
-  
-    // willDispply PleaseWait state  till the options are filled with the Authors and Genre
-    isAuthorContentArrived: false,
-    isGenreContendArrived: false,
-    // This will be for the FilteredBooks to check if requested books are arrived or not
-    isBookContentArrived: false,
+  genres: [],
+  authors: [],
+  selectedAuthors: [],
+  selectedGenres: [],
+  searchTerm: '',
 
-    ArrivedContend: [],
-    // setAuthors: (authors) => set(authors ),
-    // setGenres: (genres) => set(genres ), // 
+  // Loading states
+  isAuthorContentArrived: false,
+  isGenreContentArrived: false,
+  isBookContentArrived: false,
 
-    setAuthors: (newAuthor) => set((state) => {
-        const updatedAuthors = state.selectedAuthor.includes(newAuthor)
-          ? state.selectedAuthor.filter((author) => author !== newAuthor)
-          : [...state.authors, newAuthor];
-      
-        return {
-          selectedGenres: updatedAuthors,
-        };
-      }),
-      
-      setGenres: (newGenre) => set((state) => {
-        const updatedGenres = state.selectedGenres.includes(newGenre)
-          ? state.selectedGenres.filter((genre) => genre !== newGenre)
-          : [...state.genres, newGenre];
-      
-        return {
-          selectedGenres: updatedGenres,
-        };
-      }),
-    
+  // Filtered books
+  filteredBooks: [],
 
-    setSearchTerm :(searchTerm) => set(searchTerm)
+  // Setters for initial data
+  setInitialAuthors: (authors) => set({ authors, isAuthorContentArrived: true }),
+  setInitialGenres: (genres) => set({ genres, isGenreContentArrived: true }),
+
+  // Setters for selected filters
+  setSelectedAuthors: (selectedAuthors) => set({ selectedAuthors }),
+  setSelectedGenres: (selectedGenres) => set({ selectedGenres }),
+
+  // Setter for search term
+  setSearchTerm: (searchTerm) => set({ searchTerm }),
+
+  // Setter for filtered books
+  setFilteredBooks: (books) => set({ filteredBooks: books, isBookContentArrived: true }),
+
+
+  setSearchTerm: (searchTerm) => set({searchTerm})
 
 }))
