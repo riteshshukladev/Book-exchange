@@ -33,23 +33,30 @@ const FilterBooks = () => {
     applyFilters,
     resetFilters,
     filteredBooks,
+    setInitialAuthors,
+    setInitialGenres,
+    setFilteredBooks,
   } = useFilterBooks();
 
   useEffect(() => {
-    fetchInitialOfFilters({ initialSetAuthors, initialSetGenres,setArrivedContent });
+    fetchInitialOfFilters({
+      setInitialAuthors,
+      setInitialGenres,
+      setFilteredBooks,
+    });
   }, [fetchInitialOfFilters]);
 
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate('/');
+      navigate("/");
     }
-  })
+  });
 
   return (
     <div className="space-y-6">
-      <Card className="w-auto">
+      <Card className="w-auto bg-slate-50">
         <CardHeader>
-          <CardTitle>Filter according to your need!</CardTitle>
+          <CardTitle className="">Filter according to your need!</CardTitle>
           <CardDescription>
             Filter by authors, genre and name, UP TO YOU!!
           </CardDescription>
@@ -89,8 +96,16 @@ const FilterBooks = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <Button className="w-full sm:w-auto" onClick={applyFilters}>Apply Filters</Button>
-            <Button className="w-full sm:w-auto" variant="outline" onClick={resetFilters}>Reset Filters</Button>
+            <Button className="w-full sm:w-auto" onClick={applyFilters}>
+              Apply Filters
+            </Button>
+            <Button
+              className="w-full sm:w-auto"
+              variant="outline"
+              onClick={resetFilters}
+            >
+              Reset Filters
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -105,7 +120,6 @@ const FilterBooks = () => {
         </div>
       ) : (
         <div>
-          {/* Render your filtered books here */}
           {filteredBooks.map((book) => (
             <div key={book.id}>{book.title}</div>
           ))}

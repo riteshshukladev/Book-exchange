@@ -21,15 +21,26 @@ export function ComboboxDemo({
 }) {
   const [open, setOpen] = React.useState(false)
 
-  const handleSelect = (currentValue) => {
-    setSelectedContent((prev) => {
-      if (prev.includes(currentValue)) {
-        return prev.filter((item) => item !== currentValue)
-      } else {
-        return [...prev, currentValue]
-      }
-    })
-  }
+  // const handleSelect = (currentValue) => {
+  //   setSelectedContent((prev) => {
+  //     if (prev.includes(currentValue)) {
+  //       return prev.filter((item) => item !== currentValue)
+  //     } else {
+  //       return [...prev, currentValue]
+  //     }
+  //   })
+  // }
+
+  const handleSelect = React.useCallback((currentValue) => {
+    setSelectedContent((prevSelected) => {
+      console.log("Previous selected in ComboboxDemo:", prevSelected);
+      const newSelected = prevSelected.includes(currentValue)
+        ? prevSelected.filter((item) => item !== currentValue)
+        : [...prevSelected, currentValue];
+      console.log("New selected in ComboboxDemo:", newSelected);
+      return newSelected;
+    });
+  }, [setSelectedContent]);
 
   return (
     <Popover open={open} onOpenChange={setOpen} className='w-full'>
@@ -40,7 +51,7 @@ export function ComboboxDemo({
           aria-expanded={open}
           className="w-full justify-between"
         >
-          {selectedContent.length > 0
+          {Array.isArray(selectedContent) && selectedContent.length > 0
             ? selectedContent.map(v => content.find(item => item.value === v)?.label).join(" | ")
             : placeholder}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -64,7 +75,7 @@ export function ComboboxDemo({
                     <Check
                       className={cn(
                         "mr-2 h-4 w-4",
-                        selectedContent.includes(item.value) ? "opacity-100" : "opacity-0"
+                        Array.isArray(selectedContent) && selectedContent.includes(item.value) ? "opacity-100" : "opacity-0"
                       )}
                     />
                     {item.label}
