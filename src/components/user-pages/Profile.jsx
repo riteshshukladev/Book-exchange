@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import useProfileStore from "@/store/ProfileStore";
 import { useQuery } from "@tanstack/react-query";
 import { isAuthenticated } from "@/services/authService";
-
+import {intialFetchUserDetails} from "@/services/profileService"
 
 const Profile = () => {
 
@@ -33,7 +33,7 @@ const Profile = () => {
 
   const { isLoading: isQueryLoading, error: queryError } = useQuery({
     queryKey: ['userProfileInitialFetch'],
-    // queryFn:,
+    queryFn:intialFetchUserDetails,
 
     onSuccess: (data) => {
       loadUserProfile(data.returnedInitialProfile)
@@ -45,6 +45,29 @@ const Profile = () => {
 
   const handleSubmit = () => {
     
+  }
+
+  if (isQueryLoading || isLoading) {
+    return (
+      <div>
+        <Card>
+          <CardTitle>Please Wait your details is on the way</CardTitle>
+          <CardDescription>Loading</CardDescription>
+        </Card>
+      </div>
+    )
+  }
+
+
+  if (queryError || error) {
+    return (
+      <div>
+      <Card>
+        <CardTitle>{ `Error while fetching user details :(`}</CardTitle>
+          <CardDescription>Their was an error while fetching user details</CardDescription>
+        </Card>
+      </div>
+    )
   }
 
   return (

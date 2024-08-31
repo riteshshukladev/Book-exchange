@@ -8,36 +8,41 @@ const useProfileStore = create((set) => ({
     address: "",
     phone_no: "",
     bio: "",
-    },
-    
-    updateProfileField: (name, value) => set((state) => ({
-        userProfile: {
-            ...state.userProfile,
-            [name]: value
-        }
+  },
+
+  updateProfileField: (name, value) =>
+    set((state) => ({
+      userProfile: {
+        ...state.userProfile,
+        [name]: value,
+      },
     })),
 
-    loadUserProfile: (userProfile) => set({
-        userProfile: userProfile,
-        isLoading: false,
-        error: null
+  isLoading: false,
+  error: null,
+
+  loadUserProfile: (userProfile) =>
+    set({
+      userProfile: userProfile,
+      isLoading: false,
+      error: null,
     }),
 
-    setLoading: (isLoading) => set({ isLoading }),
-    
-    setError: (error) =>set({error, isLoading:false}),
+  setLoading: (isLoading) => set({ isLoading }),
 
-    resetProfile: () => set({
-        userProfile: {
-          name: '',
-          email: '',
-          password: '',
-          address: '',
-          phone_no: '',
-          bio: ''
-        }
-      })
-}))
+  setError: (error) => set({ error, isLoading: false }),
 
+  resetProfile: () =>
+    set({
+      userProfile: {
+        name: "",
+        email: "",
+        password: "",
+        address: "",
+        phone_no: "",
+        bio: "",
+      },
+    }),
+}));
 
-export default useProfileStore
+export default useProfileStore;
