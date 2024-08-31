@@ -21,12 +21,43 @@ const useProfileStore = create((set) => ({
   isLoading: false,
   error: null,
 
-  loadUserProfile: (userProfile) =>
+  // loadUserProfile: (userProfile) =>
+  //   set({
+  //     userProfile: userProfile,
+  //     isLoading: false,
+  //     error: null,
+  //   }),
+
+  // loadUserProfile: (profileData) =>
+  //   set((state) => ({
+  //     userProfile: {
+  //       ...state.userProfile,
+  //       name: profileData.name || "",
+  //       email: profileData.email || "",
+  //       address: profileData.address || "",
+  //       phone_no: profileData.phone_no || "",
+  //       bio: profileData.bio || ""
+  //     },
+  //     isLoading: false,
+  //     error: null,
+  //   })),
+
+  loadUserProfile: (profileData) => {
+    console.log("Loading user profile with data:", profileData);
     set({
-      userProfile: userProfile,
+      userProfile: {
+        name: profileData.name || "",
+        email: profileData.email || "",
+        address: profileData.address || "",
+        phone_no: profileData.phone_no || "",
+        bio: profileData.bio || "",
+      },
       isLoading: false,
       error: null,
-    }),
+    });
+    console.log("User profile updated in store");
+  },
+
 
   setLoading: (isLoading) => set({ isLoading }),
 

@@ -15,39 +15,42 @@ import { Button } from "@/components/ui/button";
 import useProfileStore from "@/store/ProfileStore";
 import { useQuery } from "@tanstack/react-query";
 import { isAuthenticated } from "@/services/authService";
-import {intialFetchUserDetails} from "@/services/profileService"
+import { initialFetchUserDetails } from "@/services/profileService";
 
 const Profile = () => {
 
 
 
 
-  const { userProfile, updateProfileField, resetProfile,isLoading, error,loadUserProfile } = useProfileStore();
+  const { userProfile, updateProfileField, resetProfile,loadUserProfile,setLoading, setError } = useProfileStore();
 
 
-  
+  console.log("Profile component rendered, userProfile:", userProfile);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     updateProfileField(name, value);
   };
 
-  const { isLoading: isQueryLoading, error: queryError } = useQuery({
+  const { isLoading, error, data } = useQuery({
     queryKey: ['userProfileInitialFetch'],
-    queryFn:intialFetchUserDetails,
-
-    onSuccess: (data) => {
-      loadUserProfile(data.returnedInitialProfile)
-    },
+    queryFn: () => initialFetchUserDetails(loadUserProfile),
     onError: (err) => {
-      console.log('error while fetching', err.message);
-    }
-  })
+      setError(err.message);
+    },
+ 
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    staleTime: Infinity,
+  });
+
 
   const handleSubmit = () => {
     
   }
 
-  if (isQueryLoading || isLoading) {
+  if (isLoading) {
     return (
       <div>
         <Card>
@@ -59,7 +62,7 @@ const Profile = () => {
   }
 
 
-  if (queryError || error) {
+  if (error) {
     return (
       <div>
       <Card>
