@@ -17,6 +17,7 @@ import { isAuthenticated } from "@/services/authService";
 import { useNavigate } from "react-router-dom";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "../ui/badge";
+import { fetchFilteredBooks } from "@/services/fetchBookService";
 
 const FilterBooks = () => {
   const navigate = useNavigate();
@@ -37,7 +38,8 @@ const FilterBooks = () => {
     setInitialAuthors,
     setInitialGenres,
     setFilteredBooks,
-    clearfilterstate
+    clearfilterstate,
+    unSetBookContentArrived
   } = useFilterBooks();
 
   useEffect(() => {
@@ -57,21 +59,19 @@ const FilterBooks = () => {
 
   const applyFilters = useCallback(async () => {
     const filters = {
-      authors: authors,
-      genres: genres,
+      authors: selectedAuthors,
+      genres: selectedGenres,
       searchTerm: searchTerm
     };
 
     try {
-      const filteredData = await fetchFilteredData(filters);
+      const filteredData = await fetchFilteredBooks({filters});
       setFilteredBooks(filteredData);
     }
     catch (err) {
       console.log('error while fetching books', err)
     }
   },[[selectedAuthors, selectedGenres, searchTerm, setFilteredBooks]])
-
-  console.log(filteredBooks)
 
   return (
     <div className="space-y-6">

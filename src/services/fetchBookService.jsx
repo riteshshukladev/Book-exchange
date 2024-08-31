@@ -1,3 +1,5 @@
+
+
 export const fetchInitialOfFilters = async ({
     setInitialAuthors,
     setInitialGenres,
@@ -39,4 +41,27 @@ export const fetchInitialOfFilters = async ({
   
   
 
-  };
+};
+  
+export const fetchFilteredBooks = async({filters}) => {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/filter/custom-filter`, {
+      method: 'POST',
+      headers: {
+        "Content-Type":"application/json"
+      },
+      body: JSON.stringify(filters),
+    })
+
+    if (!response.ok) {
+      throw new Error('Error in response');
+    }
+
+    const data = await response.json();
+    return data.filteredBooks;
+  }
+  catch (err) {
+    console.log('Error while fetching the data' + err);
+    throw err;
+  }
+}
