@@ -22,7 +22,7 @@ const Profile = () => {
 
 
 
-  const { userProfile, updateProfileField, resetProfile,loadUserProfile,setLoading, setError,changedFields,clearChangedFields } = useProfileStore();
+  const { userProfile, updateProfileField, resetProfile,loadUserProfile,setLoading, setError,changedFields,clearChangedFields,showMessage,messageType,setShowMessage } = useProfileStore();
 
 
  
@@ -44,6 +44,16 @@ const Profile = () => {
     refetchOnReconnect: false,
     staleTime: Infinity,
   });
+
+  useEffect(() => {
+    if (showMessage) {
+      const timer = setTimeout(() => {
+        setShowMessage(false);
+      }, 5000); // Hide message after 5 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [showMessage]);
 
 
   const updateProfileMutation = useMutation({
@@ -162,12 +172,12 @@ const Profile = () => {
           <Button onClick={handleSubmit} className="w-full mb-4" disabled={updateProfileMutation.isLoading}>
             {updateProfileMutation.isLoading ? 'Updating...' : 'Update Profile'}
           </Button>
-          {updateProfileMutation.isError && (
+          {showMessage && messageType === 'error' && (
             <div className="w-full p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
               <span className="font-medium">Error:</span> {updateProfileMutation.error.message}
             </div>
           )}
-          {updateProfileMutation.isSuccess && (
+          {showMessage && messageType === 'success' && (
             <div className="w-full p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400" role="alert">
               <span className="font-medium">Success:</span> Profile updated successfully!
             </div>

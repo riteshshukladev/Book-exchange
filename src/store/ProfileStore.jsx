@@ -27,6 +27,10 @@ const useProfileStore = create((set) => ({
   isLoading: false,
   error: null,
 
+  showMessage: false,
+  messageType: null,
+
+  setShowMessage: (show) => set({ showMessage: show }),
   
   loadUserProfile: (profileData) => {
     console.log("Loading user profile with data:", profileData);
@@ -44,13 +48,13 @@ const useProfileStore = create((set) => ({
     });
   },
 
-  clearChangedFields: () => set({ changedFields: {} }),
+  clearChangedFields: () => set({ changedFields: {},messageType:"success",showMessage: true }),
 
 
 
   setLoading: (isLoading) => set({ isLoading }),
 
-  setError: (error) => set({ error, isLoading: false }),
+  setError: (error) => set({ error, isLoading: false, messageType:'error', showMessage:true }),
 
   resetProfile: () =>
     set({
