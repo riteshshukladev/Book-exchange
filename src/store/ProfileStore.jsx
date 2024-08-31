@@ -9,6 +9,7 @@ const useProfileStore = create((set) => ({
     phone_no: "",
     bio: "",
   },
+  changedFields : {},
 
   updateProfileField: (name, value) =>
     set((state) => ({
@@ -16,32 +17,17 @@ const useProfileStore = create((set) => ({
         ...state.userProfile,
         [name]: value,
       },
+
+      changedFields: {
+        ...state.changedFields,
+        [name]: value,
+      }
     })),
 
   isLoading: false,
   error: null,
 
-  // loadUserProfile: (userProfile) =>
-  //   set({
-  //     userProfile: userProfile,
-  //     isLoading: false,
-  //     error: null,
-  //   }),
-
-  // loadUserProfile: (profileData) =>
-  //   set((state) => ({
-  //     userProfile: {
-  //       ...state.userProfile,
-  //       name: profileData.name || "",
-  //       email: profileData.email || "",
-  //       address: profileData.address || "",
-  //       phone_no: profileData.phone_no || "",
-  //       bio: profileData.bio || ""
-  //     },
-  //     isLoading: false,
-  //     error: null,
-  //   })),
-
+  
   loadUserProfile: (profileData) => {
     console.log("Loading user profile with data:", profileData);
     set({
@@ -53,10 +39,13 @@ const useProfileStore = create((set) => ({
         bio: profileData.bio || "",
       },
       isLoading: false,
+      changedFields:{},
       error: null,
     });
-    console.log("User profile updated in store");
   },
+
+  clearChangedFields: () => set({ changedFields: {} }),
+
 
 
   setLoading: (isLoading) => set({ isLoading }),

@@ -13,19 +13,19 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 // import useUserProfileStore from './useUserProfileStore';
 import useProfileStore from "@/store/ProfileStore";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery,useMutation } from "@tanstack/react-query";
 import { isAuthenticated } from "@/services/authService";
 import { initialFetchUserDetails } from "@/services/profileService";
-
+import { profileUpdationFunction } from "@/services/profileService";
 const Profile = () => {
 
 
 
 
-  const { userProfile, updateProfileField, resetProfile,loadUserProfile,setLoading, setError } = useProfileStore();
+  const { userProfile, updateProfileField, resetProfile,loadUserProfile,setLoading, setError,changedFields,clearChangedFields } = useProfileStore();
 
 
-  console.log("Profile component rendered, userProfile:", userProfile);
+ 
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -46,11 +46,26 @@ const Profile = () => {
   });
 
 
-  const handleSubmit = () => {
-    
+  const updateProfileMutation = useMutation({
+    mutationFn:() => profileUpdationFunction({changedFields,loadUserProfile}),
+    onSuccess: () => {
+      clearChangedFields();
+      // Optionally, show a success message to the user
+    },
+    onError: (err) => setError(err.message),
+  })
+
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (Object.keys(changedFields).length === 0) {
+      return;
+    }
+    updateProfileMutation.mutate(changedFields);
   }
 
-  if (isLoading) {
+  if (isLoading ) {
     return (
       <div>
         <Card>
@@ -107,11 +122,11 @@ const Profile = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="name">phone bo</Label>
+              <Label htmlFor="name">phone number</Label>
               <Input
-                id="Phone"
-                name="phone"
-                type="number"
+                id="Phone_no"
+                name="phone_no"
+                type="text"
                 value={userProfile.phone_no}
                 onChange={handleInputChange}
                 placeholder="Enter your phone no"
@@ -141,25 +156,22 @@ const Profile = () => {
                 rows={4}
               />
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="name">Email</Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                value={userProfile.password}
-                onChange={handleInputChange}
-                placeholder="Enter your password"
-                required
-              />
-            </div>
           </form>
         </CardContent>
-        <CardFooter>
-          <Button onClick={handleSubmit} className="w-full">
-            Update Profile
+        <CardFooter className="flex flex-col items-stretch">
+          <Button onClick={handleSubmit} className="w-full mb-4" disabled={updateProfileMutation.isLoading}>
+            {updateProfileMutation.isLoading ? 'Updating...' : 'Update Profile'}
           </Button>
+          {updateProfileMutation.isError && (
+            <div className="w-full p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+              <span className="font-medium">Error:</span> {updateProfileMutation.error.message}
+            </div>
+          )}
+          {updateProfileMutation.isSuccess && (
+            <div className="w-full p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400" role="alert">
+              <span className="font-medium">Success:</span> Profile updated successfully!
+            </div>
+          )}
         </CardFooter>
       </Card>
     </div>
