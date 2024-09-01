@@ -54,8 +54,6 @@ export const profileUpdationFunction = async ({
     }
     const responseData = await response.json();
     if (typeof responseData === 'object' && responseData !== null) {
-        console.log('Profile update success');
-        // If responseData has a 'data' property, use that; otherwise, use responseData itself
         const profileData = responseData.data || responseData;
         loadUserProfile(profileData);
         return profileData;

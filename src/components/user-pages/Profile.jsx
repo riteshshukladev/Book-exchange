@@ -17,6 +17,8 @@ import { useQuery,useMutation } from "@tanstack/react-query";
 import { isAuthenticated } from "@/services/authService";
 import { initialFetchUserDetails } from "@/services/profileService";
 import { profileUpdationFunction } from "@/services/profileService";
+
+import SelectBookExchange from "../modals/exchange-modal/SelectBookExchange";
 const Profile = () => {
 
 
@@ -184,6 +186,8 @@ const Profile = () => {
           )}
         </CardFooter>
       </Card>
+
+      
     </div>
   );
 };
