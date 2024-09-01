@@ -10,8 +10,17 @@ export const useExchangeStore = create((set) => ({
         selectedBook: selectedBook,
         isInitiateExchageModalOpen:true
     }),
+
+
+    userReplaceBook: {},
+    setUserReplaceBook: (userReplaceBook) => set({
+        userReplaceBook: userReplaceBook
+    }),
     resetExchangeModal: () => set({
         selectedBook: {},
         isInitiateExchageModalOpen: false
+    }),
+    resetReplaceBook: () => set({
+        userReplaceBook: {},
     })
 }))

@@ -17,10 +17,18 @@ import { useQuery,useMutation } from "@tanstack/react-query";
 import { isAuthenticated } from "@/services/authService";
 import { initialFetchUserDetails } from "@/services/profileService";
 import { profileUpdationFunction } from "@/services/profileService";
+import { logout } from "@/services/authService";
+import { useNavigate } from "react-router-dom";
 
-import SelectBookExchange from "../modals/exchange-modal/SelectBookExchange";
+// import SelectBookExchange from "../modals/exchange-modal/SelectBookExchange";
 const Profile = () => {
 
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!isAuthenticated()) {
+    navigate('/')
+    }
+})
 
 
 
@@ -102,7 +110,8 @@ const Profile = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <Card className="w-full max-w-2xl mx-auto">
+      <Card className="w-full max-w-2xl mx-auto relative">
+        <Button onClick= {logout} className="absolute top-5 right-5">Log Out</Button>
         <CardHeader>
           <CardTitle className="text-2xl font-bold">User Profile</CardTitle>
           <CardDescription>Update your personal information</CardDescription>
