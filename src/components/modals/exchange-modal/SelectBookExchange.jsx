@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import BookManipulation from "@/services/bookManipulation";
+import { useMutation } from "@tanstack/react-query";
 
 const SelectBookExchange = () => {
   const { books, setBooks } = useBookList();
@@ -44,12 +45,30 @@ const SelectBookExchange = () => {
     return books.filter((book) => book.email !== selectedBook.email);
   }, [books, selectedBook.id]);
 
-  const handleExchangeInitiation = (book) => {
-    console.log("Initiating exchange between:", selectedBook, "and", book);
-    resetExchangeModal();
-  };
 
+
+  console.log(selectedBook);
   console.log(userReplaceBook);
+  const intiateExchangeMutation = useMutation({
+    mutationFn: () => exchangeBookFunction(selectedBook, userReplaceBook),
+    onSuccess: () => {
+      
+    },
+    onError: (err) => {
+      
+    }
+  })
+
+  const handleExchangeSubmit = (e) => {
+    e.preventDefault();
+
+    if (Object.keys(userReplaceBook).length === 0) return;
+
+      intiateExchangeMutation.mutate()
+  }
+  
+
+  
 
   return (
     <Dialog open={isInitiateExchageModalOpen} onOpenChange={resetExchangeModal}>
@@ -93,7 +112,7 @@ const SelectBookExchange = () => {
         </ScrollArea>
 
         <DialogFooter>
-          <Button onClick={resetExchangeModal}>Cancel</Button>
+          <Button onClick={handleExchangeSubmit}>Initiate Process</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

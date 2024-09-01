@@ -70,7 +70,7 @@ const Profile = () => {
     mutationFn:() => profileUpdationFunction({changedFields,loadUserProfile}),
     onSuccess: () => {
       clearChangedFields();
-      // Optionally, show a success message to the user
+      
     },
     onError: (err) => setError(err.message),
   })
