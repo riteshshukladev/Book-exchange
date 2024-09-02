@@ -3,7 +3,7 @@ import { isAuthenticated } from "./authService"
 
 export const exchangeBookFunction = async ({ selectedBook, userReplaceBook }) => {
     
-    const token = isAuthenticated();
+    const user = isAuthenticated();
 
     try {
         const response = await fetch(
@@ -22,16 +22,9 @@ export const exchangeBookFunction = async ({ selectedBook, userReplaceBook }) =>
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const responseData = await response.json();
-        if (typeof responseData === 'object' && responseData !== null) {
-            const profileData = responseData.data || responseData;
-            // loadUserProfile(profileData);
-            // Set with your state
-            return profileData;
-        } else {
-            console.error('Unexpected response format:', responseData);
-            throw new Error('Unexpected response format');
-        }
-    } catch (error) {
+          return responseData.message
+          
+        } catch (error) {
         console.error('Failed to update user profile:', error);
         throw new Error('Failed to update user profile: ' + error.message);
     }

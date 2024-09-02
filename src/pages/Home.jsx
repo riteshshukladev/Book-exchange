@@ -1,6 +1,7 @@
 
 import React from "react";
 import { Outlet, Link } from "react-router-dom";
+import { Toaster } from "../components/ui/toaster";
 
 const Home = () => {
   return (
@@ -29,6 +30,7 @@ const Home = () => {
       <main className="flex-grow bg-gray-100">
         <Outlet />
       </main>
+      <Toaster></Toaster>
     </div>
   );
 };

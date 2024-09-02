@@ -24,8 +24,12 @@ import { ToastAction } from "@/components/ui/toast";
 import { Badge } from "@/components/ui/badge";
 import BookManipulation from "@/services/bookManipulation";
 import { useMutation } from "@tanstack/react-query";
+import { exchangeBookFunction } from "@/services/userExchangeService";
 
 const SelectBookExchange = () => {
+
+  const {toast} = useToast();
+
   const { books, setBooks } = useBookList();
   const {
     isInitiateExchageModalOpen,
@@ -49,16 +53,25 @@ const SelectBookExchange = () => {
 
   console.log(selectedBook);
   console.log(userReplaceBook);
+
   const intiateExchangeMutation = useMutation({
     mutationFn: () => exchangeBookFunction({ selectedBook, userReplaceBook }),
-    onSuccess: () => {},
-    onError: (err) => {},
+    onSuccess: (data) => {
+      toast({
+        title: "Success!!",
+        description: `${data}`,
+      })
+    },
+    onError: (err) => {
+      toast({
+        title: "Error!!",
+        description: "Error while initiaiting exchange",
+      })
+    },
   });
 
   const handleExchangeSubmit = (e) => {
     e.preventDefault();
-
-    if (Object.keys(userReplaceBook).length === 0) return;
 
     intiateExchangeMutation.mutate();
   };
