@@ -7,11 +7,59 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Book } from "lucide-react";
+import { approveBookExchange } from "@/services/userExchangeService";
+import { declineBookExchange } from "@/services/userExchangeService";
+import { useMutation } from "@tanstack/react-query";
+
+
 
 const IncomingExchanges = ({ requests }) => {
+
+    const approveExchange = useMutation({
+        mutationFn: approveBookExchange,
+        onSuccess: (data) => {
+          toast({
+            title: "Success!",
+            description: `${data}`,
+          });
+        },
+        onError: (err) => {
+          toast({
+            title: "Error!",
+            description: "Error while approving exchange",
+          });
+        },
+      });
+    
+      const declineExchange = useMutation({
+        mutationFn: declineBookExchange,
+        onSuccess: (data) => {
+          toast({
+            title: "Success!",
+            description: `${data}`,
+          });
+        },
+        onError: (err) => {
+          toast({
+            title: "Error!",
+            description: "Error while declining exchange",
+          });
+        },
+      });
+    
+      const handleIncomingRequestApprove = (book1, book2) => {
+        approveExchange.mutate({ book1, book2 });
+      };
+    
+      const handleIncomingRequestCancel = (book1, book2) => {
+        declineExchange.mutate({ book1, book2 });
+      };
+
+
   if (requests.length === 0) {
     return <h1 className="align-middle">No data</h1>;
-  }
+    }
 
   return (
     <section>
@@ -53,9 +101,10 @@ const IncomingExchanges = ({ requests }) => {
                 className={
                   request.status === "pending"
                     ? "text-yellow-500 border-yellow-500"
-                    : request.status === "accepted"
+                    : request.status === "approved"
                     ? "text-green-500 border-green-500"
-                    : "text-red-500 border-red-500"
+                    :request.status ==="declined" ? "text-white-500 border-red-500"
+                    : ""
                 }
               >
                 {request.status}
@@ -67,6 +116,8 @@ const IncomingExchanges = ({ requests }) => {
                     variant="outline"
                     size="sm"
                     className="text-green-500 border-green-500"
+                    onClick = {()=> handleIncomingRequestApprove(request.book1.id , request.book2.id)}
+                    disabled={approveExchange.isLoading}
                   >
                     Accept
                   </Button>
@@ -74,6 +125,7 @@ const IncomingExchanges = ({ requests }) => {
                     variant="outline"
                     size="sm"
                     className="text-red-500 border-red-500"
+                    onClick= {()=>handleIncomingRequestCancel(request.book1.id , request.book2.id)}
                   >
                     Decline
                   </Button>
