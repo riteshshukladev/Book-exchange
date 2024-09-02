@@ -12,7 +12,7 @@ const Home = () => {
             <h1 className="text-xl font-semibold text-gray-800">Hey, John!</h1>
             <nav>
               <ul className="flex space-x-6">
-                {["add-book", "book-filter", "book-matchmaking", "user-profile"].map((item) => (
+                {["add-book", "book-filter", "book-matchmaking","exchanges", "user-profile"].map((item) => (
                   <li key={item}>
                     <Link
                       to={item.toLowerCase()}

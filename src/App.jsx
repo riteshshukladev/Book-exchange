@@ -12,6 +12,7 @@ import BookListing from "./components/user-pages/BookListing";
 import FilterBooks from "./components/user-pages/FilterBooks";
 import Profile from "./components/user-pages/Profile";
 const queryClient = new QueryClient();
+import ExchangesPage from "./components/user-pages/ExchangesPage";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
             <Route path="book-filter" element={<FilterBooks />} />
             <Route path="book-matchmaking" element={<MatchMaking />} />
             <Route path="user-profile" element={<Profile />} />
+            <Route path="exchanges" element={<ExchangesPage />}/>
           </Route>
         </Routes>
       </BrowserRouter>
