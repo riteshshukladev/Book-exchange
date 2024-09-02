@@ -26,8 +26,6 @@ import BookManipulation from "@/services/bookManipulation";
 import { useMutation } from "@tanstack/react-query";
 
 const SelectBookExchange = () => {
-
-
   const { books, setBooks } = useBookList();
   const {
     isInitiateExchageModalOpen,
@@ -35,7 +33,7 @@ const SelectBookExchange = () => {
     selectedBook,
     setUserReplaceBook,
     userReplaceBook,
-    resetReplaceBook
+    resetReplaceBook,
   } = useExchangeStore();
 
   useEffect(() => {
@@ -49,30 +47,21 @@ const SelectBookExchange = () => {
     return books.filter((book) => book.email !== selectedBook.email);
   }, [books, selectedBook.id]);
 
-
-
   console.log(selectedBook);
   console.log(userReplaceBook);
   const intiateExchangeMutation = useMutation({
-    mutationFn: () => exchangeBookFunction({selectedBook, userReplaceBook}),
-    onSuccess: () => {
-      
-    },
-    onError: (err) => {
-      
-    }
-  })
+    mutationFn: () => exchangeBookFunction({ selectedBook, userReplaceBook }),
+    onSuccess: () => {},
+    onError: (err) => {},
+  });
 
   const handleExchangeSubmit = (e) => {
     e.preventDefault();
 
     if (Object.keys(userReplaceBook).length === 0) return;
 
-      intiateExchangeMutation.mutate()
-  }
-  
-
-  
+    intiateExchangeMutation.mutate();
+  };
 
   return (
     <Dialog open={isInitiateExchageModalOpen} onOpenChange={resetExchangeModal}>
@@ -99,8 +88,13 @@ const SelectBookExchange = () => {
                   </Badge>
                   <p className="text-sm text-gray-600 truncate">{book.email}</p>
 
-                  { userReplaceBook.id === book.id ? (
-                    <Button className="bg-stone-500 mt-2" onClick= {resetReplaceBook}>Selected</Button>
+                  {userReplaceBook.id === book.id ? (
+                    <Button
+                      className="bg-stone-500 mt-2"
+                      onClick={resetReplaceBook}
+                    >
+                      Selected
+                    </Button>
                   ) : (
                     <Button
                       className="bg-zinc-900 text-white mt-2"
