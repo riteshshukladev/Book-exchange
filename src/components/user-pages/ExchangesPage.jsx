@@ -13,16 +13,23 @@ import { useQuery } from "@tanstack/react-query";
 import RequestedExchange from "../exchanges/RequestedExchange";
 import IncomingExchanges from "../exchanges/IncomingExchanges";
 import { fetchExchangeDetails } from "../../services/userExchangeService";
+import { useQueryClient } from "@tanstack/react-query";
 
 const ExchangesPage = () => {
   const { currentRadioState, setCurrentRadioState } = useExchange();
+  const queryClient = useQueryClient();
 
-  const { data: exchangeData, isLoading, error } = useQuery({
+  const { data: exchangeData, isLoading, error, refetch } = useQuery({
     queryKey: ["exchanges"],
     queryFn: fetchExchangeDetails,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    cacheTime: 10 * 60 * 1000, // 10 minutes
+    // staleTime: 5 * 60 * 1000, // 5 minutes
+    // cacheTime: 10 * 60 * 1000, // 10 minutes
+    refetchInterval: 5000,
   });
+
+  const handleExchangeUpdate = () => {
+    queryClient.invalidateQueries(["exchanges"]);
+  };
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
@@ -66,9 +73,9 @@ const ExchangesPage = () => {
           <p>Error: {error.message}</p>
         ) : (
           currentRadioState === "incoming" ? (
-            <IncomingExchanges requests={exchangeData} />
+            <IncomingExchanges requests={exchangeData} onExchangeUpdate={handleExchangeUpdate}/>
           ) : (
-            <RequestedExchange requests={exchangeData} />
+            <RequestedExchange requests={exchangeData} onExchangeUpdate={handleExchangeUpdate}/>
           )
         )}
       </section>

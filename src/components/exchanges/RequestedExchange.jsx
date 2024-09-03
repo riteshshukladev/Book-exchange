@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useState} from "react";
 import {
   Card,
   CardHeader,
@@ -8,39 +8,45 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { declineBookExchange } from "@/services/userExchangeService";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 
 
-const RequestedExchange = ({ requests }) => {
+const RequestedExchange = ({ requests,onExchangeUpdate }) => {
+
+  const toast = useToast();
+  const queryClient = useQueryClient();
 
 
-    const declineExchange = useMutation({
-        mutationFn: declineBookExchange,
-        onSuccess: (data) => {
-          toast({
-            title: "Success!",
-            description: `${data}`,
-          });
-        },
-        onError: (err) => {
-          toast({
-            title: "Error!",
-            description: "Error while declining exchange",
-          });
-        },
+
+  const declineExchange = useMutation({
+    mutationFn: declineBookExchange,
+    onSuccess: (data) => {
+      toast({
+        title: "Success!",
+        description: `${data}`,
+        className: "bg-green-300 text-black" 
       });
-    
-      const handleRequestCancel = (book1, book2) => {
-        declineExchange.mutate({ book1, book2 });
-      };
+      queryClient.invalidateQueries("exchanges");
+      onExchangeUpdate();
+    },
+    onError: (err) => {
+      toast({
+        title: "Error!",
+        description: "Error while declining exchange",
+        className: "bg-red-300 text-black",
+      });
+    },
+  });
 
-    if (requests.length === 0) {
-        return (
-            <h1 className='align-middle'>No data</h1>
-        )
-    }
+  const handleRequestCancel = (book1, book2) => {
+    declineExchange.mutate({ book1, book2 });
+  };
 
-    
+  if (requests.length === 0) {
+    return <h1 className="align-middle">No data</h1>;
+  }
+
   return (
     <section>
       <h2 className="text-xl font-semibold mb-4 mt-4">My Requests</h2>
@@ -74,24 +80,23 @@ const RequestedExchange = ({ requests }) => {
                 variant={
                   request.status === "pending"
                     ? "outline"
-                    : request.status === "accepted"
+                    : request.status === "approved"
                     ? "success"
                     : "destructive"
-                }
-                className={
-                    request.status === "pending"
-                    ? "text-yellow-500 border-yellow-500"
-                    : request.status === "approved"
-                    ? "text-green-500 border-green-500"
-                    :request.status ==="declined" ? "text-red-500 border-red-500"
-                    : ""
                 }
               >
                 {request.status}
               </Badge>
 
               {request.status === "pending" && (
-                <Button variant="outline" size="sm" className="text-red-500" onClick= {()=>handleRequestCancel(request.book1.id , request.book2.id)}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-red-500 border-red-500 hover:bg-red-50"
+                  onClick={() =>
+                    handleRequestCancel(request.book1.id, request.book2.id)
+                  }
+                >
                   Cancel Request
                 </Button>
               )}

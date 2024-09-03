@@ -23,19 +23,19 @@ import { useNavigate } from "react-router-dom";
 // import SelectBookExchange from "../modals/exchange-modal/SelectBookExchange";
 const Profile = () => {
 
+  
+  
+  
+  const { userProfile, updateProfileField, resetProfile,loadUserProfile,setLoading, setError,changedFields,clearChangedFields,showMessage,messageType,setShowMessage } = useProfileStore();
+  
+  
+  
   const navigate = useNavigate();
   useEffect(() => {
     if (!isAuthenticated()) {
-    navigate('/')
+      navigate('/', { replace: true });
     }
-})
-
-
-
-  const { userProfile, updateProfileField, resetProfile,loadUserProfile,setLoading, setError,changedFields,clearChangedFields,showMessage,messageType,setShowMessage } = useProfileStore();
-
-
- 
+},[navigate])
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -59,7 +59,7 @@ const Profile = () => {
     if (showMessage) {
       const timer = setTimeout(() => {
         setShowMessage(false);
-      }, 5000); // Hide message after 5 seconds
+      }, 5000); 
 
       return () => clearTimeout(timer);
     }
@@ -84,6 +84,13 @@ const Profile = () => {
     }
     updateProfileMutation.mutate(changedFields);
   }
+
+
+  const handleLogout = async () => {
+    await logout();
+    resetProfile();
+    navigate('/', { replace: true });
+  };
 
   if (isLoading ) {
     return (
@@ -111,7 +118,7 @@ const Profile = () => {
   return (
     <div className="container mx-auto p-4">
       <Card className="w-full max-w-2xl mx-auto relative">
-        <Button onClick= {logout} className="absolute top-5 right-5">Log Out</Button>
+        <Button onClick={handleLogout} className="absolute top-5 right-5">Log Out</Button>
         <CardHeader>
           <CardTitle className="text-2xl font-bold">User Profile</CardTitle>
           <CardDescription>Update your personal information</CardDescription>
