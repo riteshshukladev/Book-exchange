@@ -8,11 +8,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-
+import { useToast } from "@/hooks/use-toast";
 import { useBookList } from "../../../store/bookListingStore";
 import BookManipulation from "@/services/bookManipulation";
 
 const EditBookModal = () => {
+
+  const { toast } = useToast();
   const {
     isEditModalOpen,
     closeEditModal,
@@ -24,6 +26,24 @@ const EditBookModal = () => {
   } = useBookList();
 
   if (!currentBook) return null;
+
+  const changeBook = async () => {
+    try {
+     await BookManipulation.handleEditBook(currentBook,setBooks,closeEditModal)
+     toast({
+      title: "Success",
+       description: "Change made successfully!",
+      className: "bg-green-300 text-black"
+    });
+  } catch (error) {
+    toast({
+      title: "Error",
+      description: `Failed to change the data`,
+      className: "bg-red-300 text-black",
+      variant: "destructive",
+    });
+  }
+  }
 
   return (
     <Dialog open={isEditModalOpen} onOpenChange={closeEditModal}>
@@ -56,7 +76,7 @@ const EditBookModal = () => {
           />
         </div>
         <DialogFooter>
-          <Button onClick={()=>BookManipulation.handleEditBook(currentBook,setBooks,closeEditModal)}>Save Changes</Button>
+          <Button onClick={changeBook}>Save Changes</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
