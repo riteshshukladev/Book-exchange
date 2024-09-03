@@ -1,4 +1,4 @@
-
+import { jwtDecode } from "jwt-decode";
 
 export const AuthHelper = async ({ actionType, data }) => {
   console.log(`${import.meta.env.VITE_API_URL}/${actionType}`);
@@ -58,3 +58,42 @@ export const isAuthenticated = () => {
   return token;
 }
 
+export const isTokenValid = () => {
+  const token = getToken();
+  if (!token) return false;
+
+  try {
+    const decodedToken = jwtDecode(token);
+    const currentTime = Date.now() / 1000;
+    return decodedToken.exp > currentTime;
+  } catch (error) {
+    console.error('Error decoding token:', error);
+    return false;
+  }
+};
+
+export const setupTokenExpirationCheck = (logoutCallback) => {
+  const checkTokenExpiration = () => {
+    if (!isTokenValid()) {
+      removeToken();
+      logoutCallback();
+    }
+  };
+
+
+  const intervalId = setInterval(checkTokenExpiration, 60000);
+
+  checkTokenExpiration();
+
+ 
+  return () => clearInterval(intervalId);
+};
+
+export const checkInitialToken = (logoutCallback) => {
+  if (!isTokenValid()) {
+    removeToken();
+    logoutCallback();
+    return false;
+  }
+  return true;
+};

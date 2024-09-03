@@ -20,6 +20,8 @@ const SignUpForm = () => {
     setError,
     setUserName,
     setconfirmpassword,
+    isLoading,
+    setIsLoading
   } = signUpAuth();
 
   const { login } = useAuth();
@@ -29,14 +31,17 @@ const SignUpForm = () => {
     onSuccess: (data) => {
       setUser(data.token)
       login(data.token);
+      setIsLoading(false)
     },
     onError: (err) => {
       setError({ general: err.response?.data?.message || "Signup failed" });
+      setIsLoading(false);
     },
   });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       const validateData = await signUpSchema.validate(
         { username, email, password, confirmPassword },
@@ -57,6 +62,7 @@ const SignUpForm = () => {
       } else {
         setError({ general: "An unexpected error occurred" });
       }
+      setIsLoading(false);
     }
   };
 
@@ -136,7 +142,7 @@ const SignUpForm = () => {
           disabled={mutation.isLoading}
           className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
-          {mutation.isLoading ? "Signing Up..." : "Sign Up"}
+          {isLoading ? "Signing in..." : "signIn"}
         </button>
       </div>
 

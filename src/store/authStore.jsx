@@ -7,16 +7,15 @@ const commonValues = {
 }
 
 export const loginAuth = create((set) => ({
-    
     ...commonValues,
     email: '',
     password: '',
-      
-    setUser: (user) => set({ user, isAuthenticated: true, error: null }),
+    isLoading: false,
+    setIsLoading: (isLoading) => set({ isLoading }),
+    setUser: (user) => set({ user, isAuthenticated: true, error: null, isLoading: false }),
     setError: (error) => set((state) => ({...state, error})),
     setEmail: (email) => set({ email }),
     setPassword: (password) => set({ password }),
-
 }));
 
 export const signUpAuth = create((set) => ({
@@ -26,6 +25,8 @@ export const signUpAuth = create((set) => ({
     username: '',
     password: '',
     confirmPassword: '',
+    isLoading: false,
+    setIsLoading: (isLoading) => set({ isLoading }),
     setUser: (user) => set({ user, isAuthenticated: true, error: null }),
     setError: (error) => set((state) => ({...state, error})),
     setEmail: (email) => set({ email }),

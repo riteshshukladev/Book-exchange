@@ -16,7 +16,7 @@ const LoginForm = () => {
       navigate("/add-book");
     }
   });
-  const { email, password, setEmail, setPassword, setUser, setError, error } =
+  const { email, password, setEmail, setPassword, setUser, setError, error,isLoading,setIsLoading } =
     loginAuth();
 
   const validateSchema = Yup.object().shape({
@@ -31,22 +31,24 @@ const LoginForm = () => {
   const mutation = useMutation({
     mutationFn: AuthHelper,
     onSuccess: (data) => {
-      setUser(data.token)
+      setUser(data.token);
       login(data.token);
+      setIsLoading(false);
     },
     onError: (err) => {
-      setError({ general: err?.message  || "Login failed" });
+      setError({ general: err?.message || "Login failed" });
+      setIsLoading(false);
     },
   });
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       const validateData = await validateSchema.validate(
         { email, password },
         { abortEarly: false }
       );
-      console.log(validateData)
       mutation.mutate({ actionType: "login", data: validateData });
     } catch (validationErrors) {
       if (validationErrors instanceof Yup.ValidationError) {
@@ -58,9 +60,9 @@ const LoginForm = () => {
       } else {
         setError({ general: "An unexpected error occurred" });
       }
+      setIsLoading(false);
     }
   };
-
   return (
     <form onSubmit={handleLoginSubmit} className="space-y-6">
       <div>
@@ -113,7 +115,7 @@ const LoginForm = () => {
           disabled={mutation.isLoading}
           className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
-          {mutation.isLoading ? "Logging in..." : "Login"}
+          {isLoading ? "Signing in..." : "signIn"}
         </button>
       </div>
 
