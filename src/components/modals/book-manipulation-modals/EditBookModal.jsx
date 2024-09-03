@@ -38,7 +38,7 @@ const EditBookModal = () => {
   } catch (error) {
     toast({
       title: "Error",
-      description: `Failed to change the data`,
+      description: `Failed to change the data `,
       className: "bg-red-300 text-black",
       variant: "destructive",
     });

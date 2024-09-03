@@ -47,6 +47,7 @@ const AddBookModal = () => {
             value={newBooks.title}
             onChange={(e) => setNewBookTitle(e.target.value)}
             placeholder="Book Title"
+            required
           />
         </div>
         <div>
@@ -55,6 +56,7 @@ const AddBookModal = () => {
             value={newBooks.author}
             onChange={(e) => setNewBookAuthor(e.target.value)}
             placeholder="Book Author"
+            required
           />
         </div>
         

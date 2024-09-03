@@ -26,7 +26,8 @@ const BookManipulation = {
     
       setBooks(data.data);
     } catch (error) {
-      console.error('Error fetching books:', error);
+      console.error('Error fetching books:', error.message);
+      throw error.message
     }
   },
 
@@ -48,16 +49,17 @@ const BookManipulation = {
 
       if (!response.ok) {
         console.log("in the response checking");
-        throw new Error('HTTP error ' + response.status +response.message);
+        throw new Error('HTTP error ' + response.status + response.message);
+        
       }
 
       // setNewBook({ title: '', author: '', genre: [] });
-      console.log('out')
       await this.fetchBooks(setBooks);
       clearNewBook();
       closeAddModal();
     } catch (error) {
       console.error('Error adding book:', error);
+      throw error.message
     }
   },
 
@@ -85,6 +87,7 @@ const BookManipulation = {
       console.log('in the body of edit')
     } catch (error) {
       console.error('Error editing book:', error);
+      throw error.message
     }
   },
 
@@ -108,6 +111,7 @@ const BookManipulation = {
       closeDeleteModal();
     } catch (error) {
       console.error('Error deleting book:', error);
+      throw error.message
     }
   }
 };
