@@ -76,6 +76,9 @@ const SelectBookExchange = () => {
     intiateExchangeMutation.mutate();
   };
 
+
+
+
   return (
     <Dialog open={isInitiateExchageModalOpen} onOpenChange={resetExchangeModal}>
       <DialogContent>
@@ -84,6 +87,7 @@ const SelectBookExchange = () => {
         </DialogHeader>
 
         <ScrollArea className="h-[400px] w-full rounded-md border">
+          {Object.keys(filteredBooks).length === 0 ? <h4 className="text-xl	 flext align-middle justify-center text-red-500	">You're either selecting your own book or the list is empty</h4> :
           <div className="p-4 space-y-4">
             {filteredBooks.map((book) => (
               <Card key={book.id} className="w-full">
@@ -119,7 +123,8 @@ const SelectBookExchange = () => {
                 </CardContent>
               </Card>
             ))}
-          </div>
+              
+          </div>}
         </ScrollArea>
 
         <DialogFooter>

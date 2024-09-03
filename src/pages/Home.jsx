@@ -9,7 +9,7 @@ const Home = () => {
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
-            <h1 className="text-xl font-semibold text-gray-800">Hey, John!</h1>
+            <h1 className="text-xl font-semibold text-gray-800">Hey!!</h1>
             <nav>
               <ul className="flex space-x-6">
                 {["add-book", "book-filter", "book-matchmaking","exchanges", "user-profile"].map((item) => (
