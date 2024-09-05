@@ -13,7 +13,7 @@ const LoginForm = () => {
 
   useEffect(() => {
     if (isAuthenticated()) {
-      navigate("/add-book");
+      navigate("/books");
     }
   });
   const { email, password, setEmail, setPassword, setUser, setError, error,isLoading,setIsLoading } =

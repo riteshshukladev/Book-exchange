@@ -29,10 +29,10 @@ function App() {
               </ProtectedRoute>
             }
           >
-            <Route path ="add-book" element = {<BookListing/>}/>
-            <Route path="book-filter" element={<FilterBooks />} />
-            <Route path="book-matchmaking" element={<MatchMaking />} />
-            <Route path="user-profile" element={<Profile />} />
+            <Route path ="books" element = {<BookListing/>}/>
+            <Route path="filter" element={<FilterBooks />} />
+            <Route path="matchmaking" element={<MatchMaking />} />
+            <Route path="profile" element={<Profile />} />
             <Route path="exchanges" element={<ExchangesPage />}/>
           </Route>
         </Routes>

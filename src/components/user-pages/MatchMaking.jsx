@@ -15,16 +15,19 @@ import { Label } from "../ui/label";
 import { Badge } from "../ui/badge";
 
 import { ScrollArea } from "../ui/scroll-area";
-import { useBookList } from "@/store/bookListingStore";
+import { useExchangeStore } from "@/store/InitiateExchangeStore";
+import SelectBookExchange from "../modals/exchange-modal/SelectBookExchange";
 
 const MatchMaking = () => {
-  const { matchedBooks, setMatchedBooks, setError, fetchMatchMaking } =
+  
+  const { matchedBooks, setMatchedBooks, setError, fetchMatchMaking, } =
     useMatchMakingStore();
-    const { books } = useBookList();
+
+  const { setExchangeModal } = useExchangeStore();
     
   const { error, isLoading } = useQuery({
     queryKey: ["matchmaking"],
-    queryFn: () => fetchMatchMaking(setMatchedBooks,books),
+    queryFn: () => fetchMatchMaking(setMatchedBooks),
     
     onError: (err) => {
       setError(err.message);
@@ -99,6 +102,8 @@ const MatchMaking = () => {
           ))}
         </div>
       </ScrollArea>
+
+      <SelectBookExchange />
     </div>
   );
 };
