@@ -3,10 +3,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"; // or 
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Login from "../src/pages/Login";
 import Signup from "../src/pages/Signup";
-// import ProtectedRoute from "./components/protected-route/protectedRoute";
+import ProtectedRoute from "./components/protected-route/ProtectedRoute";
 import Home from "./pages/Home";
-// import BookLis from "./components/user-pages/MatchMaking";
-// import FilterBooks from "./components/user-pages/FilterBooks";
+
 import MatchMaking from './components/user-pages/MatchMaking'
 import BookListing from "./components/user-pages/BookListing";
 import FilterBooks from "./components/user-pages/FilterBooks";

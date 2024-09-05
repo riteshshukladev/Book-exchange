@@ -1,23 +1,4 @@
-// import React from "react";
-// import SignUpForm from "../components/auth/SignUpForm";
-// import { loginAuth } from "../store/authStore";
-// import * as Yup from "yup";
 
-// const Signup = () => {
-
-  
-
-
-//   return (
-//     <div>
-//       <div>
-//         <SignUpForm />
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Signup;
 
 
 import React from "react";
