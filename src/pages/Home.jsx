@@ -1,16 +1,27 @@
-import React from "react";
-import { Outlet, Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Outlet, Link, useLocation } from "react-router-dom";
 import { Toaster } from "../components/ui/toaster";
 import { useQuery } from "@tanstack/react-query";
 import { fetchPendingRequests } from "@/services/authService";
 
 const Home = () => {
-  const { data: requestCount, isLoading, isError, error } = useQuery({
-    queryKey: ['pendingRequests'],
+  const location = useLocation();
+  const [showCount, setShowCount] = useState(true);
+  const {
+    data: requestCount,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["pendingRequests"],
     queryFn: fetchPendingRequests,
     refetchInterval: 60000, // Refetch every minute
-    refetchIntervalInBackground: true
+    refetchIntervalInBackground: true,
   });
+
+  useEffect(() => {
+    setShowCount(location.pathname !== "/exchanges");
+  }, [location.pathname]);
 
   console.log("Request Count:", requestCount);
 
@@ -24,27 +35,29 @@ const Home = () => {
             </Link>
             <nav>
               <ul className="flex space-x-6">
-                {[
-                  "books",
-                  "filter",
-                  "matchmaking",
-                  "exchanges",
-                  "profile",
-                ].map((item) => (
-                  <li key={item}>
-                    <Link
-                      to={item.toLowerCase()}
-                      className="text-gray-600 hover:text-gray-900 transition-colors relative"
-                    >
-                      {item}
-                      {item === "exchanges" && requestCount > 0 && (
-                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                          {requestCount}
-                        </span>
-                      )}
-                    </Link>
-                  </li>
-                ))}
+                {["books", "filter", "matchmaking", "exchanges", "profile"].map(
+                  (item) => (
+                    <li key={item}>
+                      <Link
+                        to={item.toLowerCase()}
+                        className={`text-gray-600 hover:text-gray-900 transition-colors relative ${
+                          location.pathname === `/${item.toLowerCase()}`
+                            ? "text-blue-500"
+                            : ""
+                        }`}
+                      >
+                        {item}
+                        {item === "exchanges" &&
+                          showCount &&
+                          requestCount > 0 && (
+                            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                              {requestCount}
+                            </span>
+                          )}
+                      </Link>
+                    </li>
+                  )
+                )}
               </ul>
             </nav>
           </div>
