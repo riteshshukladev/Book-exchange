@@ -14,10 +14,10 @@ import { Button } from "@/components/ui/button";
 // import useUserProfileStore from './useUserProfileStore';
 import useProfileStore from "@/store/ProfileStore";
 import { useQuery,useMutation } from "@tanstack/react-query";
-import { isAuthenticated } from "@/services/authService";
+// import { isAuthenticated } from "@/services/authService";
 import { initialFetchUserDetails } from "@/services/profileService";
 import { profileUpdationFunction } from "@/services/profileService";
-import { logout } from "@/services/authService";
+// import { logout } from "@/services/authService";
 import { useNavigate } from "react-router-dom";
 
 // import SelectBookExchange from "../modals/exchange-modal/SelectBookExchange";
@@ -31,11 +31,11 @@ const Profile = () => {
   
   
   const navigate = useNavigate();
-  useEffect(() => {
-    if (!isAuthenticated()) {
-      navigate('/', { replace: true });
-    }
-},[navigate])
+//   useEffect(() => {
+//     if (!isAuthenticated()) {
+//       navigate('/', { replace: true });
+//     }
+// },[navigate])
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -86,11 +86,11 @@ const Profile = () => {
   }
 
 
-  const handleLogout = async () => {
-    await logout();
-    resetProfile();
-    navigate('/', { replace: true });
-  };
+  // const handleLogout = async () => {
+  //   await logout();
+  //   resetProfile();
+  //   navigate('/', { replace: true });
+  // };
 
   if (isLoading ) {
     return (

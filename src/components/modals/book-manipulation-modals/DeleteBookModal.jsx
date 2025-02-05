@@ -1,53 +1,75 @@
+import { useEffect } from "react";
 import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogFooter,
-  } from "@/components/ui/dialog";
-  import { Input } from "@/components/ui/input";
-  import { Label } from "@/components/ui/label";
-  import { Button } from "@/components/ui/button";
-  import { useToast } from "@/hooks/use-toast";
-  import { useBookList } from "../../../store/bookListingStore";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { useBookList } from "../../../store/bookListingStore";
 import BookManipulation from "@/services/bookManipulation";
+import useBookMutation from "@/hooks/useBookMutation";
 
 const DeleteBookModal = () => {
+  const { isDeleteModalOpen, closeDeleteModal, currentBook, setBooks } =
+    useBookList();
 
-  const { toast } = useToast();
-  const { isDeleteModalOpen, closeDeleteModal, currentBook,setBooks } = useBookList();
+  const deleteBookHandler = useBookMutation(
+    () =>
+      BookManipulation.handleDeleteBook(
+        currentBook.id,
+        setBooks,
+        closeDeleteModal
+      ),
+    {
+      onSuccess: () => {
+        closeDeleteModal();
+      },
+    }
+  );
 
-  if (!currentBook) return null;
-  { console.log(currentBook.id) };
-  
-  const deleteBook = async () => {
-    try {
-     await BookManipulation.handleDeleteBook(currentBook.id, setBooks,closeDeleteModal)
-     toast({
-      title: "Success",
-       description: "Book deleted successfully!",
-      className: "bg-green-300 text-black"
-    });
-  } catch (error) {
-    toast({
-      title: "Error",
-      description: `Failed to delete book:`,
-      className: "bg-red-300 text-black",
-      variant: "destructive",
-    });
-  }
-  }
+  const deleteBook = () => {
+    deleteBookHandler.mutate();
+  };
+
+  const handleModalClose = () => {
+    deleteBookHandler.reset();
+    closeDeleteModal();
+  };
+
+  useEffect(() => {
+    if (isDeleteModalOpen) {
+      deleteBookHandler.reset();
+    }
+  }, [isDeleteModalOpen]);
+
+  if (!isDeleteModalOpen) return null;
 
   return (
-    <Dialog open={isDeleteModalOpen} onOpenChange={closeDeleteModal}>
+    <Dialog open={isDeleteModalOpen} onOpenChange={handleModalClose}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Delete Book</DialogTitle>
         </DialogHeader>
-        <p>Are you sure you want to delete "{currentBook.title}" by {currentBook.author}?</p>
+        <p>
+          Are you sure you want to delete "{currentBook.title}" by{" "}
+          {currentBook.author}?
+        </p>
         <DialogFooter>
-          <Button variant="outline" onClick={closeDeleteModal}>Cancel</Button>
-          <Button variant="destructive" onClick={deleteBook}>Delete</Button>
+          <Button variant="outline" onClick={handleModalClose}>
+            Cancel
+          </Button>
+          <Button variant="destructive" onClick={deleteBook}>
+            {deleteBookHandler.isPending ? (
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Deleting...
+              </div>
+            ) : (
+              "Delete"
+            )}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

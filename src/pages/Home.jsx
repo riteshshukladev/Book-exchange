@@ -15,15 +15,14 @@ const Home = () => {
   } = useQuery({
     queryKey: ["pendingRequests"],
     queryFn: fetchPendingRequests,
-    refetchInterval: 60000, // Refetch every minute
-    refetchIntervalInBackground: true,
+
   });
 
   useEffect(() => {
     setShowCount(location.pathname !== "/exchanges");
   }, [location.pathname]);
 
-  console.log("Request Count:", requestCount);
+  // console.log("Request Count:", requestCount);
 
   return (
     <div className="flex flex-col min-h-screen">

@@ -1,67 +1,48 @@
-
-
-export const fetchInitialOfFilters = async ({
-    setInitialAuthors,
-    setInitialGenres,
-    setFilteredBooks,
-  }) => {
-    try {
-      const [authorData, GenreData, FilteredData] = await Promise.all(
-        [
-          "/api/filter/all-authors",
-          "/api/filter/all-genres",
-          "/api/filter/all-books",
-        ].map(async (val) => {
-          const response = await fetch(`${import.meta.env.VITE_API_URL}${val}`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
-  
-          if (!response.ok) {
-            throw new Error("Error in response");
-          }
-          return response.json();
-        })
-      );
-  
-      // Format the data before setting it
-      const formattedAuthors = authorData.AuthorsNameFormatted || [];
-        const formattedGenres = GenreData.GenresNameFormatted || [];
-        
-        const formattedResult = FilteredData.formattedBooks || [];
-      setInitialAuthors(formattedAuthors);
-      setInitialGenres(formattedGenres);
-      setFilteredBooks(formattedResult);
-    } catch (err) {
-      console.error("Error while fetching:", err);
-
-  }
-  
-  
-
-};
-  
-export const fetchFilteredBooks = async({filters}) => {
+export const fetchInitialOfFilters = async () => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/filter/custom-filter`, {
-      method: 'POST',
-      headers: {
-        "Content-Type":"application/json"
-      },
-      body: JSON.stringify(filters),
-    })
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/filter/initial-filter-fetch`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
 
     if (!response.ok) {
-      throw new Error('Error in response');
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data; // Return the data directly
+  } catch (err) {
+    console.error("Error while fetching:", err);
+    throw err;
+  }
+};
+
+
+export const fetchFilteredBooks = async ({ authors, genres, searchTerm }) => {
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/filter/custom-filter`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ authors, genres, searchTerm }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Error in response");
     }
 
     const data = await response.json();
     return data.filteredBooks;
+  } catch (error) {
+    console.error("Error filtering books:", error);
+    throw error;
   }
-  catch (err) {
-    console.log('Error while fetching the data' + err);
-    throw err;
-  }
-}
+};

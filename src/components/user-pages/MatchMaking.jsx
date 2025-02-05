@@ -20,7 +20,7 @@ import SelectBookExchange from "../modals/exchange-modal/SelectBookExchange";
 
 const MatchMaking = () => {
   
-  const { matchedBooks, setMatchedBooks, setError, fetchMatchMaking, } =
+  const { matchedBooks, setMatchedBooks, setError, fetchMatchMaking,redirectToLogin, resetRedirect } =
     useMatchMakingStore();
 
   const { setExchangeModal } = useExchangeStore();

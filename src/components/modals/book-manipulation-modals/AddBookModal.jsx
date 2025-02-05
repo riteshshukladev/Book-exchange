@@ -1,42 +1,67 @@
-import React from 'react';
+import React,{useEffect} from "react";
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle,DialogFooter } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
-import { useBookList } from '../../../store/bookListingStore';
-// import { handleAddBook } from '@/services/bookManipulation';
-import BookManipulation from '@/services/bookManipulation';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { useBookList } from "../../../store/bookListingStore";
+import BookManipulation from "@/services/bookManipulation";
 
-
+import useBookMutation from "@/hooks/useBookMutation";
 
 const AddBookModal = () => {
+  const {
+    isAddModalOpen,
+    closeAddModal,
+    newBooks,
+    setNewBookTitle,
+    setNewBookAuthor,
+    setNewBookGenre,
+    setBooks,
+    clearNewBook,
+  } = useBookList();
 
+  const bookAddHandler = useBookMutation(
+    () =>
+      BookManipulation.handleAddBook(
+        newBooks,
+        setBooks,
+        closeAddModal,
+        clearNewBook
+      ),
+    {
+      onSuccess: () => {
+        closeAddModal();
+        clearNewBook();
+        
+      },
+      
+    }
+  );
 
-  const { toast } = useToast();
-  const { isAddModalOpen, closeAddModal, newBooks, setNewBookTitle, setNewBookAuthor, setNewBookGenre, setBooks, clearNewBook } = useBookList();
-  
-  const addBook = async () => {
-    try {
-     await BookManipulation.handleAddBook(newBooks,setBooks,closeAddModal,clearNewBook)
-     toast({
-      title: "Success",
-       description: "Book added successfully!",
-      className: "bg-green-300 text-black"
-    });
-  } catch (error) {
-    toast({
-      title: "Error",
-      description: `Failed to add book`,
-      className: "bg-red-300 text-black",
-      variant: "destructive",
-    });
+  const addBook = () => {
+    bookAddHandler.mutate();
+  };
+
+  const handleCloseModal = () =>{
+    bookAddHandler.reset()
+    closeAddModal()
   }
-  }
+
+  useEffect(() =>{
+    if(isAddModalOpen){
+      bookAddHandler.reset();
+    } 
+  },[isAddModalOpen])
 
   return (
-    <Dialog open={isAddModalOpen} onOpenChange={closeAddModal}>
+    <Dialog open={isAddModalOpen} onOpenChange={handleCloseModal}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Add New Book</DialogTitle>
@@ -59,7 +84,7 @@ const AddBookModal = () => {
             required
           />
         </div>
-        
+
         <div>
           <Label>Genre</Label>
           <Input
@@ -69,7 +94,14 @@ const AddBookModal = () => {
           />
         </div>
         <DialogFooter>
-          <Button onClick={addBook}>Add Book</Button>
+          <Button onClick={addBook}>{bookAddHandler.isPending ? (
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Adding Book...
+              </div>
+            ) : (
+              "Add Book"
+            )}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

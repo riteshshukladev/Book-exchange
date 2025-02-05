@@ -1,16 +1,18 @@
 import { jwtDecode } from "jwt-decode";
 
-export const AuthHelper = async ({ actionType, data }) => {
+export const AuthHelper = async ({ actionType, data,signal }) => {
   console.log(`${import.meta.env.VITE_API_URL}/${actionType}`);
   console.log(data, actionType);
   try {
     const response = await fetch(`${import.meta.env.VITE_API_URL}/${actionType}`, {
       
       method: 'POST',
+      credentials:'include',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
+      signal: signal
     });
 
     if (!response.ok) {
@@ -18,11 +20,6 @@ export const AuthHelper = async ({ actionType, data }) => {
     }
 
     const responseData = await response.json();
-    
-    if (responseData.token) {
-      
-      localStorage.setItem('token', responseData.token);
-    }
 
     return responseData;
   } catch (error) {
@@ -60,64 +57,64 @@ export const fetchPendingRequests = async () => {
   }
 }
 
-export const logout = () => {
-  // localStorage.removeItem('email');
-  localStorage.removeItem('token')
-};
+// export const logout = () => {
+//   // localStorage.removeItem('email');
+//   localStorage.removeItem('token')
+// };
 
-export const getCurrentUser = () => {
-  return localStorage.getItem('token');
-};
+// export const getCurrentUser = () => {
+//   return localStorage.getItem('token');
+// };
 
-export const getToken = () => {
-  return localStorage.getItem('token');
-}
-
-
-export const isAuthenticated = () => {
-  const token = getToken();
-  if (!token) {
-    return false;
-  }
-  return token;
-}
-
-export const isTokenValid = () => {
-  const token = getToken();
-  if (!token) return false;
-
-  try {
-    const decodedToken = jwtDecode(token);
-    const currentTime = Date.now() / 1000;
-    return decodedToken.exp > currentTime;
-  } catch (error) {
-    console.error('Error decoding token:', error);
-    return false;
-  }
-};
-
-export const setupTokenExpirationCheck = (logoutCallback) => {
-  const checkTokenExpiration = () => {
-    if (!isTokenValid()) {
-      removeToken();
-      logoutCallback();
-    }
-  };
+// export const getToken = () => {
+//   return localStorage.getItem('token');
+// }
 
 
-  const intervalId = setInterval(checkTokenExpiration, 60000);
+// export const isAuthenticated = () => {
+//   const token = getToken();
+//   if (!token) {
+//     return false;
+//   }
+//   return token;
+// }
 
-  checkTokenExpiration();
+// export const isTokenValid = () => {
+//   const token = getToken();
+//   if (!token) return false;
+
+//   try {
+//     const decodedToken = jwtDecode(token);
+//     const currentTime = Date.now() / 1000;
+//     return decodedToken.exp > currentTime;
+//   } catch (error) {
+//     console.error('Error decoding token:', error);
+//     return false;
+//   }
+// };
+
+// export const setupTokenExpirationCheck = (logoutCallback) => {
+//   const checkTokenExpiration = () => {
+//     if (!isTokenValid()) {
+//       removeToken();
+//       logoutCallback();
+//     }
+//   };
+
+
+//   const intervalId = setInterval(checkTokenExpiration, 60000);
+
+//   checkTokenExpiration();
 
  
-  return () => clearInterval(intervalId);
-};
+//   return () => clearInterval(intervalId);
+// };
 
-export const checkInitialToken = (logoutCallback) => {
-  if (!isTokenValid()) {
-    removeToken();
-    logoutCallback();
-    return false;
-  }
-  return true;
-};
+// export const checkInitialToken = (logoutCallback) => {
+//   if (!isTokenValid()) {
+//     removeToken();
+//     logoutCallback();
+//     return false;
+//   }
+//   return true;
+// };

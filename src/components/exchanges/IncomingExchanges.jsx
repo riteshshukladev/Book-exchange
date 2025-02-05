@@ -69,6 +69,7 @@ const IncomingExchanges = ({ requests,onExchangeUpdate }) => {
     return <h1 className="align-middle">No data</h1>;
   }
 
+  
   return (
     <section>
       <h2 className="mb-6 text-2xl font-semibold">Incoming Requests</h2>

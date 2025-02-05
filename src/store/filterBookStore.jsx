@@ -1,72 +1,115 @@
 import { create } from "zustand";
 
+/**
+ * @typedef {Object} FilterState
+ * @property {Array} genres - List of all available genres
+ * @property {Array} authors - List of all available authors
+ * @property {Array} selectedAuthors - Currently selected authors
+ * @property {Array} selectedGenres - Currently selected genres
+ * @property {string} searchTerm - Current search term
+ * @property {boolean} isAuthorContentArrived - Authors loading state
+ * @property {boolean} isGenreContentArrived - Genres loading state
+ * @property {boolean} isBookContentArrived - Books loading state
+ * @property {Array} filteredBooks - List of filtered books
+ */
+
 export const useFilterBooks = create((set) => ({
+  // Initial stateis
   genres: [],
   authors: [],
   selectedAuthors: [],
   selectedGenres: [],
   searchTerm: "",
+  filteredBooks: [],
 
   // Loading states
   isAuthorContentArrived: false,
   isGenreContentArrived: false,
   isBookContentArrived: false,
 
-  // Filtered books
-  filteredBooks: [],
-
-  // Setters for initial data
+  // Initial data setters
   setInitialAuthors: (authors) =>
-    set({ authors: authors, isAuthorContentArrived: true }),
+    set({
+      authors,
+      isAuthorContentArrived: true,
+    }),
+
   setInitialGenres: (genres) =>
-    set({ genres: genres, isGenreContentArrived: true }),
-  setFilteredBooks: (books) =>
-    set({ filteredBooks: books, isBookContentArrived: true }),
-  // setArrivedContent: (filteredBooks) => set({
-  //   filteredBooks:filteredBooks, isBookContentArrived:true
-  // }),
+    set({
+      genres,
+      isGenreContentArrived: true,
+    }),
 
-  // Setters for selected filters
-  // setSelectedAuthors: (selectedAuthors) => set({
-  //    selectedAuthors }),
-  // setSelectedGenres: (selectedGenres) => set({ selectedGenres }),
+  // Filter setters with validation
+  setSelectedAuthors: (newSelectedAuthors) =>
+    set((state) => {
+      const updatedAuthors =
+        typeof newSelectedAuthors === "function"
+          ? newSelectedAuthors(state.selectedAuthors)
+          : newSelectedAuthors;
 
-  // setSelectedAuthors: (selectedAuthors) => {
-  //   console.log("Setting selected authors:", selectedAuthors);
-  //   set({ selectedAuthors });
-  // },
+      console.log({
+        previous: state.selectedAuthors,
+        updated: updatedAuthors,
+      });
 
-  // setSelectedGenres: (selectedGenres) => {
-  //   console.log("Setting selected Genres:", selectedGenres);
-  //   set({selectedGenres})
-  // },
+      return { selectedAuthors: updatedAuthors };
+    }),
 
-  setSelectedAuthors: (newSelectedAuthors) => set((state) => {
-    const updatedAuthors = typeof newSelectedAuthors === 'function' 
-      ? newSelectedAuthors(state.selectedAuthors)
-      : newSelectedAuthors;
-    console.log("Current selectedAuthors:", state.selectedAuthors);
-    console.log("New selectedAuthors:", updatedAuthors);
-    return { selectedAuthors: updatedAuthors };
-  }),
+  setSelectedGenres: (newSelectedGenres) =>
+    set((state) => {
+      const updatedGenres =
+        typeof newSelectedGenres === "function"
+          ? newSelectedGenres(state.selectedGenres)
+          : newSelectedGenres;
 
-  setSelectedGenres: (newSelectedGenres) => set((state) => {
-    const updatedGenres = typeof newSelectedGenres === 'function'
-      ? newSelectedGenres(state.selectedGenres)
-      : newSelectedGenres;
-    console.log("Current selectedGenres:", state.selectedGenres);
-    console.log("New selectedGenres:", updatedGenres);
-    return { selectedGenres: updatedGenres };
-  }),
+      console.log({
+        previous: state.selectedGenres,
+        updated: updatedGenres,
+      });
 
-  // Setter for search term
+      return { selectedGenres: updatedGenres };
+    }),
+
+  // Search and results handling
   setSearchTerm: (searchTerm) => set({ searchTerm }),
 
-  // Setter for filtered books
   setFilteredBooks: (books) =>
-    set({ filteredBooks: books, isBookContentArrived: true }),
+    set({
+      filteredBooks: books,
+      isBookContentArrived: true,
+    }),
 
-  setSearchTerm: (searchTerm) => set({ searchTerm }),
+  // Reset filters
 
-  clearfilterstate: () => set({  selectedAuthors: [],  selectedGenres: [],  searchTerm: ""})
+  clearFilterState: () =>
+    set({
+      selectedAuthors: [],
+      selectedGenres: [],
+      searchTerm: "",
+      filteredBooks: [],
+      isBookContentArrived: true,
+    }),
+
+  // Error handling
+  setError: (error) =>
+    set({
+      error,
+      isBookContentArrived: true,
+    }),
+
+  // Reset store
+  resetStore: () =>
+    set({
+      genres: [],
+      authors: [],
+      selectedAuthors: [],
+      selectedGenres: [],
+      searchTerm: "",
+      filteredBooks: [],
+      isAuthorContentArrived: false,
+      isGenreContentArrived: false,
+      isBookContentArrived: false,
+      error: null,
+    }),
 }));

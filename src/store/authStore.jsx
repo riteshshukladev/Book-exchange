@@ -27,7 +27,7 @@ export const signUpAuth = create((set) => ({
     confirmPassword: '',
     isLoading: false,
     setIsLoading: (isLoading) => set({ isLoading }),
-    setUser: (user) => set({ user, isAuthenticated: true, error: {}, isLoading: false }),setUser: (user) => set({ user, isAuthenticated: true, error: null }),
+    setUser: (user) => set({ user, isAuthenticated: true, error: {}, isLoading: false }),
     setError: (error) => set((state) => ({...state, error})),
     setEmail: (email) => set({ email }),
     setUserName: (username) => set({username}),

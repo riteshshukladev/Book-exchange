@@ -64,8 +64,4 @@ export const useBookList = create((set) => ({
         genre: "",
       },
     })),
-  
-  
 }));
-
-
