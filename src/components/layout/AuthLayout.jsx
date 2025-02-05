@@ -19,10 +19,7 @@ const AuthLayout = ({ children }) => {
       {/* Content */}
       <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4">
         <div className="w-full max-w-md">
-          <div
-            className="bg-white/95 backdrop-blur-sm rounded-2xl
-        shadow-xl overflow-hidden"
-          >
+          <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden relative">
             {children}
           </div>
         </div>

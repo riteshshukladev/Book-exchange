@@ -38,7 +38,7 @@ const SignUpForm = () => {
       }
     },
     onError: (err) => {
-      setError({ general: err.response?.data?.message || "Signup failed" });
+      setError({ general: err.message || "Signup failed" });
       setIsLoading(false);
     },
   });
@@ -113,7 +113,7 @@ const SignUpForm = () => {
             />
           </div>
           {error.email && (
-            <p className="mt-2 text-sm text-red-600">{error.email}</p>
+            <p className="mt-2 text-sm text-red-600 font-kreon">{error.email}</p>
           )}
         </div>
 
@@ -135,7 +135,7 @@ const SignUpForm = () => {
             />
           </div>
           {error.password && (
-            <p className="mt-2 text-sm text-red-600">{error.password}</p>
+            <p className="mt-2 text-sm text-red-600 font-kreon">{error.password}</p>
           )}
         </div>
 
@@ -157,7 +157,7 @@ const SignUpForm = () => {
             />
           </div>
           {error.confirmPassword && (
-            <p className="mt-2 text-sm text-red-600">{error.confirmPassword}</p>
+            <p className="mt-2 text-sm text-red-600 font-kreon">{error.confirmPassword}</p>
           )}
         </div>
 
@@ -171,7 +171,7 @@ const SignUpForm = () => {
         </div>
 
         {error.general && (
-          <p className="mt-2 text-sm text-red-600">{error.general}</p>
+          <p className="mt-2 text-sm text-red-600 font-kreon">{error.general}</p>
         )}
       </form>
       <div className="pt-3">
@@ -188,7 +188,7 @@ const SignUpForm = () => {
             }`}
         >
           <span className="text-xl font-normal font-kreon text-black">
-            {mutation.isLoading ? "Logging in..." : "Proceed"}
+            {isLoading ? "Logging in..." : "Proceed"}
           </span>
           <img src={arrowImg} />
         </button>

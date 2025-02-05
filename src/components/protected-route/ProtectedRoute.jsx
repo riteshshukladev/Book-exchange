@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useProtectedRoute } from '@/store/protectedRouteStore';
+import LoadingOverlay from '../layout/LoadingOverlay';
 
 const ProtectedRoute = ({ children }) => {
   const navigate = useNavigate();
@@ -31,14 +32,7 @@ const ProtectedRoute = ({ children }) => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="p-8 bg-white rounded-lg shadow-md">
-          <div className="flex flex-col items-center space-y-4">
-            <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-lg font-medium text-gray-700">Verifying authentication...</p>
-          </div>
-        </div>
-      </div>
+      <LoadingOverlay />
     );
   }
 

@@ -1,61 +1,63 @@
 import { jwtDecode } from "jwt-decode";
 
-export const AuthHelper = async ({ actionType, data,signal }) => {
-  console.log(`${import.meta.env.VITE_API_URL}/${actionType}`);
-  console.log(data, actionType);
+export const AuthHelper = async ({ actionType, data, signal }) => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/${actionType}`, {
-      
-      method: 'POST',
-      credentials:'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-      signal: signal
-    });
-
-    if (!response.ok) {
-      throw new Error(`${response.message}:${response.status}`);
-    }
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/${actionType}`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+        signal: signal,
+      }
+    );
 
     const responseData = await response.json();
 
+    // Check if response is not ok
+    if (!response.ok) {
+      throw new Error(responseData.message || "An error occurred");
+    }
+
     return responseData;
   } catch (error) {
-    if (error instanceof TypeError) {
-      console.log(error.message);
-      throw new Error(error.message);
-    } else {
-      console.log(error.message);
-      throw new Error( error.message);
+    // Handle network errors or JSON parsing errors
+    if (error instanceof TypeError || error instanceof SyntaxError) {
+      throw new Error("Network error or invalid response format");
     }
+    // Throw the error message from the server or the error itself
+    throw new Error(error.message || "An unexpected error occurred");
   }
 };
-
 export const fetchPendingRequests = async () => {
   const user = getCurrentUser();
   console.log(user);
   try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/books/get-exchange-requests`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${user}`
-      },
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/books/get-exchange-requests`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user}`,
+        },
+      }
+    );
 
     if (!response.ok) {
       console.log("in the response checking");
-      throw new Error('HTTP error ' + response.status + response.message);
+      throw new Error("HTTP error " + response.status + response.message);
     }
     const data = await response.json();
     return data.count; // Return the count directly
   } catch (error) {
-    console.error('Error fetching books:', error.message);
+    console.error("Error fetching books:", error.message);
     throw error;
   }
-}
+};
 
 // export const logout = () => {
 //   // localStorage.removeItem('email');
@@ -69,7 +71,6 @@ export const fetchPendingRequests = async () => {
 // export const getToken = () => {
 //   return localStorage.getItem('token');
 // }
-
 
 // export const isAuthenticated = () => {
 //   const token = getToken();
@@ -101,12 +102,10 @@ export const fetchPendingRequests = async () => {
 //     }
 //   };
 
-
 //   const intervalId = setInterval(checkTokenExpiration, 60000);
 
 //   checkTokenExpiration();
 
- 
 //   return () => clearInterval(intervalId);
 // };
 

@@ -6,6 +6,8 @@ import { AuthHelper } from "../../services/authService";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import arrowImg from "../../assets/icons/arrow1.svg";
+import LoadingOverlay from "../layout/LoadingOverlay";
+import { loginSchema } from "@/helpers/validationSchema";
 
 import { isAuthenticated } from "../../services/protectedAuthService.js";
 const LoginForm = () => {
@@ -56,17 +58,15 @@ const LoginForm = () => {
     mutationFn: AuthHelper,
     onSuccess: (data) => {
       if (data.status === 200) {
-        // setUser(data.token);
         setIsLoading(false);
-
         navigate("/books", { replace: true });
       } else {
-        setError({ general: "Login failed" });
+        setError({ general: data.message || "Login failed" });
         setIsLoading(false);
       }
     },
     onError: (err) => {
-      setError({ general: err?.message || "Login failed" });
+      setError({ general: err.message || "Login failed" }); 
       setIsLoading(false);
     },
   });
@@ -76,7 +76,7 @@ const LoginForm = () => {
     setIsLoading(true);
     const abortController = new AbortController();
     try {
-      const validateData = await validateSchema.validate(
+      const validateData = await loginSchema.validate(
         { email, password },
         { abortEarly: false }
       );
@@ -91,26 +91,15 @@ const LoginForm = () => {
         validationErrors.inner.forEach((error) => {
           errorObject[error.path] = error.message;
         });
-      } else {
-        setError({ general: "An unexpected error occurred" });
+        setError(errorObject);
       }
+      } 
       setIsLoading(false);
     }
-  };
+  
 
   if (isCheckingAuth) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="p-8 bg-white rounded-lg shadow-md">
-          <div className="flex flex-col items-center space-y-4">
-            <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-lg font-medium text-gray-700">
-              Verifying authentication...
-            </p>
-          </div>
-        </div>
-      </div>
-    );
+    return <LoadingOverlay />;
   }
   return (
     <div className="flex flex-col ">
@@ -134,7 +123,7 @@ const LoginForm = () => {
           </div>
 
           {error.email && (
-            <p className="mt-2 text-sm text-red-600">{error.email}</p>
+            <p className="mt-2 text-sm text-red-600 font-kreon">{error.email}</p>
           )}
         </div>
 
@@ -156,7 +145,7 @@ const LoginForm = () => {
             />
           </div>
           {error.password && (
-            <p className="mt-2 text-sm text-red-600">{error.password}</p>
+            <p className="mt-2 text-sm text-red-600 font-kreon">{error.password}</p>
           )}
         </div>
 
@@ -187,13 +176,9 @@ const LoginForm = () => {
             }`}
         >
           <span className="text-xl font-normal font-kreon text-black">
-            {mutation.isLoading ? "Logging in..." : "Proceed"}
+            {isLoading ? "Logging in..." : "Proceed"}
           </span>
-          <img
-            src={arrowImg}
-            alt="Proceed arrow"
-            
-          />
+          <img src={arrowImg} alt="Proceed arrow" />
         </button>
       </div>
     </div>
