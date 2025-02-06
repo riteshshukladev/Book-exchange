@@ -64,7 +64,7 @@ const AddBookModal = () => {
     <Dialog open={isAddModalOpen} onOpenChange={handleCloseModal}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add New Book</DialogTitle>
+          <DialogTitle className="font-josephine font-xl text-black font-medium">Add New Book</DialogTitle>
         </DialogHeader>
         <div>
           <Label>Title</Label>

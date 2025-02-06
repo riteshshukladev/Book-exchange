@@ -22,7 +22,7 @@ const LoginForm = () => {
         const isAuthed = await isAuthenticated();
 
         if (isAuthed) {
-          navigate("/books");
+          navigate("/home");
         }
       } catch (error) {
         console.log(error);
@@ -59,7 +59,7 @@ const LoginForm = () => {
     onSuccess: (data) => {
       if (data.status === 200) {
         setIsLoading(false);
-        navigate("/books", { replace: true });
+        navigate("/home", { replace: true });
       } else {
         setError({ general: data.message || "Login failed" });
         setIsLoading(false);

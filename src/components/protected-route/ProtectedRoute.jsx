@@ -19,11 +19,11 @@ const ProtectedRoute = ({ children }) => {
         
         console.log(authStatus)
         if (authStatus === false) {
-          navigate('/', { replace: true });
+          navigate('/login', { replace: true });
         }
       } catch (error) {
         console.error('Auth verification failed:', error);
-        navigate('/', { replace: true });
+        navigate('/login', { replace: true });
       }
     };
 
@@ -38,7 +38,7 @@ const ProtectedRoute = ({ children }) => {
 
   // Only redirect if explicitly not authenticated
   if (isAuthed === false) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   return children;

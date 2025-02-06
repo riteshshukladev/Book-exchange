@@ -1,25 +1,29 @@
 import React from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"; // or 'react-query' if using v3
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Login from "../src/pages/Login";
-import Signup from "../src/pages/Signup";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import ProtectedRoute from "./components/protected-route/ProtectedRoute";
 import Home from "./pages/Home";
-
-import MatchMaking from './components/user-pages/MatchMaking'
+import MatchMaking from "./components/user-pages/MatchMaking";
 import BookListing from "./components/user-pages/BookListing";
 import FilterBooks from "./components/user-pages/FilterBooks";
 import Profile from "./components/user-pages/Profile";
-const queryClient = new QueryClient();
 import ExchangesPage from "./components/user-pages/ExchangesPage";
+
+const queryClient = new QueryClient();
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Login />} />
+          {/* Redirect root to login */}
+          <Route path="/" element={<Navigate to="/login" replace />} />
+          {/* Public routes */}
+          <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          {/* Protected routes */}
           <Route
             path="/*"
             element={
@@ -28,11 +32,12 @@ function App() {
               </ProtectedRoute>
             }
           >
-            <Route path ="books" element = {<BookListing/>}/>
-            <Route path="filter" element={<FilterBooks />} />
-            <Route path="matchmaking" element={<MatchMaking />} />
+            <Route index element={<Navigate to="home" replace />} />
+            <Route path="home" element={<BookListing />} />
+            <Route path="exchange" element={<FilterBooks />} />
+            <Route path="finds" element={<MatchMaking />} />
             <Route path="profile" element={<Profile />} />
-            <Route path="exchanges" element={<ExchangesPage />}/>
+            <Route path="record" element={<ExchangesPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

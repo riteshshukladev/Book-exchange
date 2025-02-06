@@ -34,7 +34,7 @@ const SignUpForm = () => {
     onSuccess: (data) => {
       setIsLoading(false);
       if (data.status === 200) {
-        navigate("/books", { replace: true });
+        navigate("/home", { replace: true });
       }
     },
     onError: (err) => {

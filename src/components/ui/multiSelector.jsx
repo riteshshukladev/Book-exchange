@@ -49,21 +49,19 @@ export function ComboboxDemo({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between"
+          className="w-full justify-between font-kreon font-medium text-base"
         >
-          {Array.isArray(selectedContent) && selectedContent.length > 0
-            ? selectedContent.map(v => content.find(item => item.value === v)?.label).join(" | ")
-            : placeholder}
+          {placeholder}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0">
         <Command className='w-full'>
-          <CommandInput placeholder={placeholder} />
-          <CommandEmpty>No results found.</CommandEmpty>
+          <CommandInput placeholder={placeholder} className="font-kreon text-black font-normal"/>
+          <CommandEmpty className="font-kreon pt-2 text-black font-normal">No results found.</CommandEmpty>
           <CommandList>
             {!isContentArrived ? (
-              <CommandEmpty>Loading...</CommandEmpty>
+              <CommandEmpty className="font-kreon pt-2 text-black font-normal">Loading...</CommandEmpty>
             ) : (
               <CommandGroup>
                 {content.map((item) => (
@@ -71,6 +69,7 @@ export function ComboboxDemo({
                     key={item.value}
                     value={item.value}
                     onSelect={() => handleSelect(item.value)}
+                    className="font-kreon pt-2 text-black font-normal"
                   >
                     <Check
                       className={cn(

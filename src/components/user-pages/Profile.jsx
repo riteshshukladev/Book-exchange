@@ -118,7 +118,7 @@ const Profile = () => {
   return (
     <div className="container mx-auto p-4">
       <Card className="w-full max-w-2xl mx-auto relative">
-        <Button onClick={handleLogout} className="absolute top-5 right-5">Log Out</Button>
+        <Button onClick={''} className="absolute top-5 right-5">Log Out</Button>
         <CardHeader>
           <CardTitle className="text-2xl font-bold">User Profile</CardTitle>
           <CardDescription>Update your personal information</CardDescription>

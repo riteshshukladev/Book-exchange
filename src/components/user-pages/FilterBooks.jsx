@@ -21,6 +21,8 @@ import { fetchFilteredBooks } from "@/services/fetchBookService";
 import SelectBookExchange from "../modals/exchange-modal/SelectBookExchange";
 import { useExchangeStore } from "@/store/InitiateExchangeStore";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import LoadingOverlay from "../layout/LoadingOverlay";
+import { BookIcon, User } from "lucide-react";
 
 const FilterBooks = () => {
   const navigate = useNavigate();
@@ -47,34 +49,29 @@ const FilterBooks = () => {
 
   const { setExchangeModal } = useExchangeStore();
 
-
   const {
-    data:initialFetchData,
+    data: initialFetchData,
     isLoading: filterFetchLoading,
     isError: filterFetchError,
-    error: queryError
+    error: queryError,
   } = useQuery({
     queryKey: ["bookFilters"],
     queryFn: fetchInitialOfFilters,
-    onSuccess: (data) => {
-      
-    },
+    onSuccess: (data) => {},
     onError: (error) => {
       console.error("Filter fetch error:", error);
     },
-  
   });
 
-
-  useEffect(()=>{
-    if(initialFetchData){
-      console.log(initialFetchData)
+  useEffect(() => {
+    if (initialFetchData) {
+      console.log(initialFetchData);
       const { allAuthors, allGenres, allBooks } = initialFetchData;
       setInitialAuthors(allAuthors || []);
       setInitialGenres(allGenres || []);
       setFilteredBooks(allBooks || []);
     }
-  },[initialFetchData])
+  }, [initialFetchData]);
 
   const applyFilterMutation = useMutation({
     mutationFn: (filters) =>
@@ -108,18 +105,15 @@ const FilterBooks = () => {
   return (
     <div className="space-y-6">
       <Card className="w-auto bg-slate-50">
-        <CardHeader>
+        {/* <CardHeader>
           <CardTitle className="">Filter according to your need!</CardTitle>
           <CardDescription>
             Filter by authors, genre and name, UP TO YOU!!
           </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        </CardHeader> */}
+        <CardContent className="flex flex-row pt-4 pb-4 pl-4 pr-4 justify-between flex !flex-col gap-4 md:!flex-row">
+          <div className="flex flex-row gap-2">
             <div>
-              <Label htmlFor="author-select" className="mb-2 block">
-                Filter By Author
-              </Label>
               <ComboboxDemo
                 content={authors}
                 selectedContent={selectedAuthors}
@@ -129,9 +123,6 @@ const FilterBooks = () => {
               />
             </div>
             <div>
-              <Label htmlFor="genre-select" className="mb-2 block">
-                Filter By Genre
-              </Label>
               <ComboboxDemo
                 content={genres}
                 selectedContent={selectedGenres}
@@ -148,11 +139,13 @@ const FilterBooks = () => {
               className="flex-grow"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              className="font-kreon text-black font-medium text-base"
             />
             <Button
               className="w-full sm:w-auto"
               onClick={handleApplyFilters}
               disabled={applyFilterMutation.isPending}
+              className="font-kreon font-medium text-sm tracking-wide"
             >
               {applyFilterMutation.isPending ? "Applying..." : "Apply Filters"}
             </Button>
@@ -160,6 +153,7 @@ const FilterBooks = () => {
               className="w-full sm:w-auto"
               variant="outline"
               onClick={handleResetFilters}
+              className="font-kreon text-black font-medium text-sm tracking-wide"
             >
               Reset Filters
             </Button>
@@ -169,40 +163,43 @@ const FilterBooks = () => {
 
       {/* Display filtered books */}
       {!isBookContentArrived ? (
-        <div>Loading books...</div>
+        <LoadingOverlay />
       ) : filteredBooks.length === 0 ? (
         <div>
           <CardTitle>No books found</CardTitle>
           <CardDescription>Try adjusting your filters</CardDescription>
         </div>
       ) : (
-        <ScrollArea className="h-[400px] w-full rounded-md border">
-          <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <ScrollArea className=" w-full rounded-md border">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
             {filteredBooks.map((book) => (
-              <Card key={book.id} className="w-full">
+              <Card key={book.id} className="p-4">
                 <CardHeader>
-                  <CardTitle className="text-lg font-bold truncate">
+                  <CardTitle className="flex items-center gap-2 font-josephine text-xl md:text-2xl text-blac">
+                    <BookIcon className="w-5 h-5 k" />
                     {book.title}
                   </CardTitle>
-                  <CardDescription className="text-sm text-gray-500">
-                    by {book.author}
-                  </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Badge variant="secondary" className="mb-2">
+                  <p className="text-base text-gray-800 font-kreon font-medium">
+                    {book.author}
+                  </p>
+                  <p className="text-xs text-gray-800 font-kreon font-medium px-2 py-1 bg-slate-200 rounded-full w-fit">
                     {book.genre}
-                  </Badge>
-                  <p className="text-sm text-gray-600 truncate">{book.email}</p>
-
-                  <Button
-                    onClick={() => setExchangeModal(book)}
-                    className="bg-zinc-900	text-white my-2"
-                  >
-                    Initiate exchange
-                  </Button>
+                  </p>
                 </CardContent>
-                <CardFooter className="text-xs text-gray-400">
-                  ID: {book.id}
+                <CardFooter className="flex justify-between items-center flex-row sm:flex-col sm:items-baseline sm:pt-5 sm:gap-1 xl:flex-row">
+                  <div className="flex items-center gap-2 font-kreon font-normal text-base">
+                    <User className="w-4 h-4" />
+                    {book.email}
+                  </div>
+                  <Button
+                    className="font-kreon font-medium border-black hover:bg-gray-100 "
+                    variant="outline"
+                    onClick={() => setExchangeModal(book)}
+                  >
+                    Request Exchange
+                  </Button>
                 </CardFooter>
               </Card>
             ))}
