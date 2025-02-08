@@ -14,7 +14,8 @@ export const exchangeBookFunction = async ({ selectedBook, userReplaceBook }) =>
       }
     );
 
-    if (!response.ok) {
+    const responseData = await response.json();
+    if(!response.ok){
       if (response.status === 401) {
         const refreshed = await refreshToken();
         if (refreshed) {
@@ -22,10 +23,10 @@ export const exchangeBookFunction = async ({ selectedBook, userReplaceBook }) =>
         }
         throw new Error('Authentication failed');
       }
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw responseData;
     }
-    const responseData = await response.json();
-    return responseData.message;
+
+    return responseData;
   } catch (error) {
     console.error('Failed to exchange books:', error);
     throw error;

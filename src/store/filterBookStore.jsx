@@ -73,6 +73,7 @@ export const useFilterBooks = create((set) => ({
 
   // Search and results handling
   setSearchTerm: (searchTerm) => set({ searchTerm }),
+  setBookContentArrived: (value) => set({ isBookContentArrived: value }),
 
   setFilteredBooks: (books) =>
     set({

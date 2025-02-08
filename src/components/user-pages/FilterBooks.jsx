@@ -20,11 +20,15 @@ import { Badge } from "../ui/badge";
 import { fetchFilteredBooks } from "@/services/fetchBookService";
 import SelectBookExchange from "../modals/exchange-modal/SelectBookExchange";
 import { useExchangeStore } from "@/store/InitiateExchangeStore";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation,useQueryClient } from "@tanstack/react-query";
 import LoadingOverlay from "../layout/LoadingOverlay";
 import { BookIcon, User } from "lucide-react";
+import { useBookList } from "@/store/bookListingStore";
+
 
 const FilterBooks = () => {
+  const queryClient = useQueryClient();
+  const {books} = useBookList();
   const navigate = useNavigate();
   const {
     isAuthorContentArrived,
@@ -65,13 +69,21 @@ const FilterBooks = () => {
 
   useEffect(() => {
     if (initialFetchData) {
-      console.log(initialFetchData);
+      if (!books.length) { 
+        queryClient.invalidateQueries("books");
+      }
       const { allAuthors, allGenres, allBooks } = initialFetchData;
+      
+      
+      const filteredAllBooks = allBooks.filter(book => 
+        !books.some(userBook => userBook.id === book.id)
+      );
+  
       setInitialAuthors(allAuthors || []);
       setInitialGenres(allGenres || []);
-      setFilteredBooks(allBooks || []);
+      setFilteredBooks(filteredAllBooks || []);
     }
-  }, [initialFetchData]);
+  }, [initialFetchData, books, queryClient]);
 
   const applyFilterMutation = useMutation({
     mutationFn: (filters) =>
@@ -95,12 +107,17 @@ const FilterBooks = () => {
 
   const handleResetFilters = async () => {
     clearFilterState();
-    // Refetch initial data
+    
     if (initialFetchData) {
       const { allBooks } = initialFetchData;
       setFilteredBooks(allBooks || []);
     }
   };
+
+  const handleExchangeRequest = (book) => {
+    navigate(`/exchange-request/${book.id}`, { state: { book } });
+  };
+
 
   return (
     <div className="space-y-6">
@@ -196,7 +213,7 @@ const FilterBooks = () => {
                   <Button
                     className="font-kreon font-medium border-black hover:bg-gray-100 "
                     variant="outline"
-                    onClick={() => setExchangeModal(book)}
+                    onClick={() => handleExchangeRequest(book)}
                   >
                     Request Exchange
                   </Button>

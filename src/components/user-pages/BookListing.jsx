@@ -8,6 +8,7 @@ import DeleteBookModal from "../modals/book-manipulation-modals/DeleteBookModal"
 import BookManipulation from "@/services/bookManipulation";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import LoadingOverlay from "../layout/LoadingOverlay";
 
 const BookListing = () => {
   const {
@@ -15,6 +16,7 @@ const BookListing = () => {
     openAddModal,
     openEditModal,
     openDeleteModal,
+    setBooks
   } = useBookList();
 
   // useEffect(() => {
@@ -33,7 +35,15 @@ const BookListing = () => {
     refetchOnWindowFocus: true,
   });
 
-  if (isLoading) return <div>Loading...</div>;
+
+  // To make the state global of the books
+  useEffect(() => {
+    if (books) {
+      setBooks(books);
+    }
+  },[books]);
+
+  if (isLoading) return <LoadingOverlay />;
   if (error) return <div>Error: {error.message}</div>;
 
   console.log(books);

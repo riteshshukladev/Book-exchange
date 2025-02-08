@@ -21,9 +21,7 @@ const useMatchMakingStore = create((set) => ({
 
   resetRedirect: () => set({ redirectToLogin: false }),
 
-  fetchMatchMaking: async (setMatchedBooks) => {
-    
-
+  fetchMatchMaking: async () => {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/matchmaking/matches`,
@@ -36,29 +34,29 @@ const useMatchMakingStore = create((set) => ({
         }
       );
 
+      const data = await response.json();
+
       if (!response.ok) {
-        // throw new Error('Error in response');
         if (response.status === 401) {
           const refreshed = await refreshToken();
           if (refreshed) {
-            return fetchMatchMaking(setMatchedBooks);
-            }
-            throw new Error({status: response.status, message: "Error in response"});
+            return fetchMatchMaking();
           }
-        throw new Error("Error in response");
+          throw new Error("Authentication failed");
+        }
+        throw new Error(data.message || "Failed to fetch matches");
       }
 
-      const data = await response.json(); 
-      console.log(data);
-      setMatchedBooks(data.globalBooks);
-
-      return data;
+      // Set the matched books directly in the store
+      set({ matchedBooks: data.globalBooks });
+      return data.globalBooks;
     } catch (error) {
-      console.log("error while matchmaking", error.message);
-      if (error.status === 401) {
-          set({ error: "Unauthorized",redirectToLogin:true  });
-          
-      }
+      console.error("Error while matchmaking:", error);
+      set({
+        error: error.message || "Failed to fetch matches",
+        redirectToLogin: error.status === 401,
+      });
+      throw error; // Re-throw to trigger onError in useQuery
     }
   },
 }));
