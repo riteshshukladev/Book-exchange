@@ -25,6 +25,7 @@ export const initialFetchUserDetails = async (loadUserProfile) => {
     }
 
     const responseData = await response.json();
+    console.log("User data:", responseData);
     loadUserProfile(responseData.data);
     return responseData.data;
 

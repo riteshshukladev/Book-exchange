@@ -69,6 +69,8 @@ const logout = async () => {
     if (!response.ok) throw new Error("Logout failed");
 
     console.log("User logged out successfully");
+
+    return true;
   } catch (error) {
     console.error("Error logging out:", error);
   }

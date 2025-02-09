@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -7,203 +7,217 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-// import useUserProfileStore from './useUserProfileStore';
+import { User, Mail, MapPin, Phone, FileText } from "lucide-react";
 import useProfileStore from "@/store/ProfileStore";
-import { useQuery,useMutation } from "@tanstack/react-query";
-// import { isAuthenticated } from "@/services/authService";
+import { useQuery, useMutation,useQueryClient } from "@tanstack/react-query";
 import { initialFetchUserDetails } from "@/services/profileService";
 import { profileUpdationFunction } from "@/services/profileService";
-// import { logout } from "@/services/authService";
 import { useNavigate } from "react-router-dom";
-
-// import SelectBookExchange from "../modals/exchange-modal/SelectBookExchange";
+import ProfileUpdateModal from "../modals/profile-modals/ProfileUpdateModal";
+import LoadingOverlay from "../layout/LoadingOverlay";
+import { useToast } from "@/hooks/use-toast";
+import { logout } from "@/services/protectedAuthService";
 const Profile = () => {
+  const { toast } = useToast();
+  // console.log("toast", toast);
+  const {
+    userProfile,
+    updateProfileField,
+    resetProfile,
+    loadUserProfile,
+    setLoading,
+    setError,
+    changedFields,
+    clearChangedFields,
+    showMessage,
+    messageType,
+    setShowMessage,
+  } = useProfileStore();
 
-  
-  
-  
-  const { userProfile, updateProfileField, resetProfile,loadUserProfile,setLoading, setError,changedFields,clearChangedFields,showMessage,messageType,setShowMessage } = useProfileStore();
-  
-  
-  
   const navigate = useNavigate();
-//   useEffect(() => {
-//     if (!isAuthenticated()) {
-//       navigate('/', { replace: true });
-//     }
-// },[navigate])
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    updateProfileField(name, value);
-  };
+  const queryClient = useQueryClient();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { isLoading, error, data } = useQuery({
-    queryKey: ['userProfileInitialFetch'],
+    queryKey: ["userProfileInitialFetch"],
     queryFn: () => initialFetchUserDetails(loadUserProfile),
     onError: (err) => {
       setError(err.message);
     },
- 
+
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     refetchOnReconnect: false,
     staleTime: Infinity,
   });
 
-  useEffect(() => {
-    if (showMessage) {
-      const timer = setTimeout(() => {
-        setShowMessage(false);
-      }, 5000); 
-
-      return () => clearTimeout(timer);
-    }
-  }, [showMessage]);
-
-
   const updateProfileMutation = useMutation({
-    mutationFn:() => profileUpdationFunction({changedFields,loadUserProfile}),
+    mutationFn: (profileChanges) =>
+      profileUpdationFunction({
+        changedFields: profileChanges,
+        loadUserProfile,
+      }),
     onSuccess: () => {
+      setIsModalOpen(false);
       clearChangedFields();
-      
+      toast({
+        title: "Success!",
+        description: "Profile updated successfully",
+        variant: "success",
+      });
     },
-    onError: (err) => setError(err.message),
-  })
+    onError: (err) => {
+      setError(err.message);
+      setIsModalOpen(false);
+      clearChangedFields();
+      toast({
+        title: "Error!",
+        description: "Error while updating profile",
+        variant: "error",
+      });
+    },
+  });
 
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (Object.keys(changedFields).length === 0) {
-      return;
-    }
+  const handleSubmit = (profileChanges) => {
+    const changedFields = {};
+    Object.keys(profileChanges).forEach((key) => {
+      if (profileChanges[key] !== userProfile[key]) {
+        changedFields[key] = profileChanges[key];
+      }
+    });
     updateProfileMutation.mutate(changedFields);
+  };
+
+
+
+  const handleLogout = useMutation({
+    mutationFn: logout,
+    onSuccess: () => {
+      queryClient.clear();
+      navigate("/login", { replace: true });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Could not logout properly",
+        variant: "destructive",
+      });
+    },
+    retry: 1
+  });
+
+  const logoutHandler = () => {
+    handleLogout.mutate();
+  };
+
+  if (isLoading) {
+    return <LoadingOverlay />;
   }
-
-
-  // const handleLogout = async () => {
-  //   await logout();
-  //   resetProfile();
-  //   navigate('/', { replace: true });
-  // };
-
-  if (isLoading ) {
-    return (
-      <div>
-        <Card>
-          <CardTitle>Please Wait your details is on the way</CardTitle>
-          <CardDescription>Loading</CardDescription>
-        </Card>
-      </div>
-    )
-  }
-
 
   if (error) {
     return (
       <div>
-      <Card>
-        <CardTitle>{ `Error while fetching user details :(`}</CardTitle>
-          <CardDescription>Their was an error while fetching user details</CardDescription>
+        <Card>
+          <CardTitle>{`Error while fetching user details :(`}</CardTitle>
+          <CardDescription>
+            Their was an error while fetching user details
+          </CardDescription>
         </Card>
       </div>
-    )
+    );
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <Card className="w-full max-w-2xl mx-auto relative">
-        <Button onClick={''} className="absolute top-5 right-5">Log Out</Button>
+    <div className="p-6">
+      <Card className="w-full max-w-3xl mx-auto p-4 mt-8">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">User Profile</CardTitle>
-          <CardDescription>Update your personal information</CardDescription>
+          <CardTitle className="text-2xl md:text-3xl font-josephine font-bold text-black pb-2">
+            Profile Dashboard
+          </CardTitle>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                name="name"
-                value={userProfile.name}
-                onChange={handleInputChange}
-                placeholder="Enter your name"
-              />
+        <CardContent className="space-y-4">
+          <div className="flex items-center space-x-4">
+            <User className="w-6 h-6 text-gray-500" />
+            <div>
+              <p className="font-kreon text-base md:text-lg font-medium">
+                Name:
+              </p>
+              <p className="font-kreon text-base md:text-lg font-normal bg-grey-800">
+                {userProfile.name}
+              </p>
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="name">Email</Label>
-              <Input
-                id="email"
-                name="email"
-                value={userProfile.email}
-                onChange={handleInputChange}
-                placeholder="Enter your email"
-                readOnly
-                required
-              />
+          </div>
+          <div className="flex items-center space-x-4">
+            <Mail className="w-6 h-6 text-gray-500" />
+            <div>
+              <p className="font-kreon text-base md:text-lg font-medium">
+                Email:
+              </p>
+              <p className="font-kreon text-base md:text-lg font-normal bg-grey-800">
+                {userProfile.email}
+              </p>
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="name">phone number</Label>
-              <Input
-                id="Phone_no"
-                name="phone_no"
-                type="text"
-                value={userProfile.phone_no}
-                onChange={handleInputChange}
-                placeholder="Enter your phone no"
-              />
+          </div>
+          <div className="flex items-center space-x-4">
+            <MapPin className="w-6 h-6 text-gray-500" />
+            <div>
+              <p className="font-kreon text-base md:text-lg font-medium">
+                Address:
+              </p>
+              <p className="font-kreon text-base md:text-lg font-normal bg-grey-800">
+                {userProfile.address}
+              </p>
             </div>
-            {/* Repeat similar blocks for email, password, address, phone_no */}
-            <div className="space-y-2">
-              <Label htmlFor="bio">Bio</Label>
-              <Textarea
-                id="bio"
-                name="bio"
-                value={userProfile.bio}
-                onChange={handleInputChange}
-                placeholder="Tell us about yourself"
-                rows={4}
-              />
+          </div>
+          <div className="flex items-center space-x-4">
+            <Phone className="w-6 h-6 text-gray-500" />
+            <div>
+              <p className="font-kreon text-base md:text-lg font-medium">
+                Phone:
+              </p>
+              <p className="font-kreon text-base md:text-lg font-normal bg-grey-800">
+                {userProfile.phone_no}
+              </p>
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="bio">Address</Label>
-              <Textarea
-                id="address"
-                name="address"
-                value={userProfile.address}
-                onChange={handleInputChange}
-                placeholder="Enter your address"
-                rows={4}
-              />
+          </div>
+          <div className="flex items-start space-x-4">
+            <FileText className="w-6 h-6 text-gray-500 mt-1" />
+            <div>
+              <p className="font-kreon text-base md:text-lg font-medium">
+                Bio:
+              </p>
+              <p className="font-kreon text-base md:text-lg font-normal bg-grey-800">
+                {userProfile.bio}
+              </p>
             </div>
-          </form>
+          </div>
         </CardContent>
-        <CardFooter className="flex flex-col items-stretch">
-          <Button onClick={handleSubmit} className="w-full mb-4" disabled={updateProfileMutation.isLoading}>
-            {updateProfileMutation.isLoading ? 'Updating...' : 'Update Profile'}
+        <CardFooter className="flex justify-between mt-8">
+          <Button
+            onClick={() => setIsModalOpen(true)}
+            className="font-kreon font-normal"
+          >
+            Edit
           </Button>
-          {showMessage && messageType === 'error' && (
-            <div className="w-full p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
-              <span className="font-medium">Error:</span> {updateProfileMutation.error.message}
-            </div>
-          )}
-          {showMessage && messageType === 'success' && (
-            <div className="w-full p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400" role="alert">
-              <span className="font-medium">Success:</span> Profile updated successfully!
-            </div>
-          )}
+          <Button
+            variant="outline"
+            onClick={logoutHandler}
+            className="font-kreon font-normal"
+          >
+            {handleLogout.isLoading ? "logging out" : "log out"}
+          </Button>
         </CardFooter>
-      </Card>
 
-      
+        <ProfileUpdateModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          initialProfile={userProfile}
+          onSave={handleSubmit}
+          isLoading={updateProfileMutation.isLoading}
+          error={error}
+        />
+      </Card>
     </div>
   );
 };
