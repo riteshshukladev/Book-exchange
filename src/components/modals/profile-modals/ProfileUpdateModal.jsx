@@ -1,6 +1,5 @@
-import React from "react";
-
-import { useState } from "react";
+// ProfileUpdateModal.jsx
+import React, { useState, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -23,23 +22,37 @@ const ProfileUpdateModal = ({
 }) => {
   const [profile, setProfile] = useState(initialProfile);
 
-  const handleChange = (e) => {
+  // When the initialProfile prop changes, update the local state.
+  useEffect(() => {
+    setProfile(initialProfile);
+  }, [initialProfile]);
+
+  // Memoized change handler
+  const handleChange = useCallback((e) => {
     const { name, value } = e.target;
     setProfile((prev) => ({ ...prev, [name]: value }));
-  };
+  }, []);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSave(profile);
-  };
+  // Memoized submit handler
+  const handleSubmit = useCallback(
+    (e) => {
+      e.preventDefault();
+      onSave(profile);
+    },
+    [onSave, profile]
+  );
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-josephine font-bold text-black pb-2">Edit Profile</DialogTitle>
-          {error && ( // Add error display
-            <p className=" text-red-500 font-kreon text-base md:text-lg font-medium">{error}</p>
+          <DialogTitle className="text-2xl font-josephine font-bold text-black pb-2">
+            Edit Profile
+          </DialogTitle>
+          {error && (
+            <p className="text-red-500 font-kreon text-base md:text-lg font-medium">
+              {error}
+            </p>
           )}
         </DialogHeader>
         <form onSubmit={handleSubmit}>
@@ -57,7 +70,7 @@ const ProfileUpdateModal = ({
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="email" className="text-righ font-kreon text-base md:text-lg font-mediumt">
+              <Label htmlFor="email" className="text-end font-kreon text-base md:text-lg font-medium">
                 Email:
               </Label>
               <Input
@@ -65,8 +78,6 @@ const ProfileUpdateModal = ({
                 name="email"
                 type="email"
                 value={profile.email}
-                // onChange={handleChange}
-                
                 disabled
                 className="col-span-3 font-kreon text-base md:text-lg font-medium"
               />

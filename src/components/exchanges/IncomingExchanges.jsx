@@ -1,17 +1,17 @@
-import React, { useState } from "react";
+// IncomingExchanges.jsx
+import React, { useMemo, useCallback } from "react";
 import {
   Card,
   CardHeader,
   CardContent,
   CardFooter,
   CardTitle,
-  CardDescription 
+  CardDescription,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Book } from "lucide-react";
-import { approveBookExchange } from "@/services/userExchangeService";
-import { declineBookExchange } from "@/services/userExchangeService";
+import { approveBookExchange, declineBookExchange } from "@/services/userExchangeService";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 
@@ -27,7 +27,7 @@ const IncomingExchanges = ({ requests, onExchangeUpdate }) => {
         description: `${data}`,
       });
       queryClient.invalidateQueries("exchanges");
-      onExchangeUpdate();
+      if (onExchangeUpdate) onExchangeUpdate();
     },
     onError: (err) => {
       toast({
@@ -56,13 +56,110 @@ const IncomingExchanges = ({ requests, onExchangeUpdate }) => {
     },
   });
 
-  const handleIncomingRequestApprove = (book1, book2) => {
-    approveExchange.mutate({ book1, book2 });
-  };
+  // Memoize callbacks for mutation calls
+  const handleIncomingRequestApprove = useCallback(
+    (book1, book2) => {
+      approveExchange.mutate({ book1, book2 });
+    },
+    [approveExchange]
+  );
 
-  const handleIncomingRequestCancel = (book1, book2) => {
-    declineExchange.mutate({ book1, book2 });
-  };
+  const handleIncomingRequestCancel = useCallback(
+    (book1, book2) => {
+      declineExchange.mutate({ book1, book2 });
+    },
+    [declineExchange]
+  );
+
+  // Memoize the rendered list of requests
+  const renderedRequests = useMemo(() => {
+    return requests.incoming.map((request) => (
+      <Card key={request.id} className="mb-4 p-4">
+        <CardHeader>
+          <p className="text-base font-kreon font-medium text-black">
+            From: {request.book1.owner.email}
+          </p>
+        </CardHeader>
+        <CardContent>
+          <div className="flex justify-between pb-4">
+            <div className="flex flex-col md:flex-row gap-0.5 md:gap-2 md:items-center">
+              <h4 className="text-lg font-kreon font-medium text-black">
+                Request for:
+              </h4>
+              <p className="font-kreon text-base font-medium text-gray-800">
+                Book ID-{request.book2.id}
+              </p>
+            </div>
+            <div className="flex flex-col md:flex-row gap-0.5 md:gap-2 md:items-center">
+              <h4 className="text-lg font-kreon font-medium text-black">
+                In Exchange:
+              </h4>
+              <p className="font-kreon text-base font-medium text-gray-800">
+                Book ID-{request.book1.id}
+              </p>
+            </div>
+          </div>
+        </CardContent>
+        <CardFooter className="flex items-center justify-between">
+          <span
+            className={`badge rounded-full py-1 px-2 font-kreon text-black text-sm ${
+              request.status === "pending"
+                ? "border border-yellow-500 text-gray-900"
+                : request.status === "approved"
+                ? "border-green-500 text-grey-900"
+                : "border-red-500 text-grey-900"
+            }`}
+          >
+            {request.status}
+          </span>
+          {request.status === "pending" && (
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-green-500 border-green-500 hover:bg-green-50 font-kreon text-lg font-medium"
+                onClick={() =>
+                  handleIncomingRequestApprove(
+                    request.book1.id,
+                    request.book2.id
+                  )
+                }
+                disabled={approveExchange.isLoading}
+              >
+                {approveExchange.isLoading ? "Approving..." : "Approve"}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-red-500 border-red-500 hover:bg-red-50 font-kreon text-lg font-medium"
+                onClick={() =>
+                  handleIncomingRequestCancel(
+                    request.book1.id,
+                    request.book2.id
+                  )
+                }
+                disabled={declineExchange.isLoading}
+              >
+                {declineExchange.isLoading ? "Declining..." : "Decline"}
+              </Button>
+            </div>
+          )}
+          {request.status === "approved" && (
+            <div className="text-green-500">Request Approved</div>
+          )}
+          {request.status === "declined" && (
+            <div className="text-red-500">Request Declined</div>
+          )}
+        </CardFooter>
+      </Card>
+    ));
+  }, [
+    requests.incoming,
+    handleIncomingRequestApprove,
+    handleIncomingRequestCancel,
+    approveExchange.isLoading,
+    declineExchange.isLoading,
+  ]);
 
   if (requests.incoming.length === 0) {
     return (
@@ -92,91 +189,7 @@ const IncomingExchanges = ({ requests, onExchangeUpdate }) => {
       <h2 className="mb-4 text-2xl sm:text-3xl font-josephine font-bold">
         Incoming Requests
       </h2>
-      <div className="grid gap-6">
-        {requests.incoming.map((request) => (
-          <Card key={request.id} className="mb-4 p-4">
-            <CardHeader>
-              {/* <h3 className="text-lg font-semibold">Incoming Request</h3> */}
-              <p className="text-base font-kreon font-medium text-black">
-                From: {request.book1.owner.email}
-              </p>
-            </CardHeader>
-            <CardContent>
-              <div className="flex justify-between pb-4">
-                <div className="flex flex-col md:flex-row gap-0.5 md:gap-2 md:items-center">
-                  <h4 className="text-lg font-kreon font-medium text-black">
-                    Request for:
-                  </h4>
-                  <p className="font-kreon text-base font-medium text-gray-800">
-                    Book ID-{request.book2.id}
-                  </p>
-                </div>
-                <div className="flex flex-col md:flex-row gap-0.5 md:gap-2 md:items-center">
-                  <h4 className="text-lg font-kreon font-medium text-black">
-                    In Exchange:
-                  </h4>
-                  <p className="font-kreon text-base font-medium text-gray-800">
-                    Book ID-{request.book1.id}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-            <CardFooter className="flex items-center justify-between">
-              <span
-                className={`badge rounded-full py-1 px-2 font-kreon text-black text-sm ${
-                  request.status === "pending"
-                    ? "border border-yellow-500 text-gray-900"
-                    : request.status === "approved"
-                    ? "border-green-500 text-grey-900"
-                    : "border-red-500 text-grey-900"
-                }`}
-              >
-                {request.status}
-              </span>
-
-              {request.status === "pending" && (
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="text-green-500 border-green-500 hover:bg-green-50 font-kreon text-lg font-medium"
-                    onClick={() =>
-                      handleIncomingRequestApprove(
-                        request.book1.id,
-                        request.book2.id
-                      )
-                    }
-                    disabled={approveExchange.isLoading}
-                  >
-                    {approveExchange.isLoading ? "Approving..." : "Approve"}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="text-red-500 border-red-500 hover:bg-red-50 font-kreon text-lg font-medium"
-                    onClick={() =>
-                      handleIncomingRequestCancel(
-                        request.book1.id,
-                        request.book2.id
-                      )
-                    }
-                  >
-                    {declineExchange.isLoading ? "Declining..." : "Decline"}
-                  </Button>
-                </div>
-              )}
-
-              {request.status === "approved" && (
-                <div className="text-green-500">Request Approved</div>
-              )}
-
-              {request.status === "declined" && (
-                <div className="text-red-500">Request Declined</div>
-              )}
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
+      <div className="grid gap-6">{renderedRequests}</div>
     </section>
   );
 };

@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+// Profile.jsx
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import {
   Card,
   CardContent,
@@ -10,48 +11,40 @@ import {
 import { Button } from "@/components/ui/button";
 import { User, Mail, MapPin, Phone, FileText } from "lucide-react";
 import useProfileStore from "@/store/ProfileStore";
-import { useQuery, useMutation,useQueryClient } from "@tanstack/react-query";
-import { initialFetchUserDetails } from "@/services/profileService";
-import { profileUpdationFunction } from "@/services/profileService";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  initialFetchUserDetails,
+  profileUpdationFunction,
+} from "@/services/profileService";
 import { useNavigate } from "react-router-dom";
 import ProfileUpdateModal from "../modals/profile-modals/ProfileUpdateModal";
 import LoadingOverlay from "../layout/LoadingOverlay";
 import { useToast } from "@/hooks/use-toast";
 import { logout } from "@/services/protectedAuthService";
+
 const Profile = () => {
   const { toast } = useToast();
-  // console.log("toast", toast);
-  const {
-    userProfile,
-    updateProfileField,
-    resetProfile,
-    loadUserProfile,
-    setLoading,
-    setError,
-    changedFields,
-    clearChangedFields,
-    showMessage,
-    messageType,
-    setShowMessage,
-  } = useProfileStore();
+  const { userProfile, loadUserProfile, setError, clearChangedFields } =
+    useProfileStore();
 
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { isLoading, error, data } = useQuery({
+  // Fetch initial user details
+  const { isLoading, error } = useQuery({
     queryKey: ["userProfileInitialFetch"],
     queryFn: () => initialFetchUserDetails(loadUserProfile),
     onError: (err) => {
       setError(err.message);
     },
-
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     refetchOnReconnect: false,
     staleTime: Infinity,
   });
 
+  // Mutation for updating the profile
   const updateProfileMutation = useMutation({
     mutationFn: (profileChanges) =>
       profileUpdationFunction({
@@ -79,19 +72,22 @@ const Profile = () => {
     },
   });
 
-  const handleSubmit = (profileChanges) => {
-    const changedFields = {};
-    Object.keys(profileChanges).forEach((key) => {
-      if (profileChanges[key] !== userProfile[key]) {
-        changedFields[key] = profileChanges[key];
-      }
-    });
-    updateProfileMutation.mutate(changedFields);
-  };
+  // Memoized submit handler for profile updates
+  const handleSubmit = useCallback(
+    (profileChanges) => {
+      const changedFields = {};
+      Object.keys(profileChanges).forEach((key) => {
+        if (profileChanges[key] !== userProfile[key]) {
+          changedFields[key] = profileChanges[key];
+        }
+      });
+      updateProfileMutation.mutate(changedFields);
+    },
+    [userProfile, updateProfileMutation]
+  );
 
-
-
-  const handleLogout = useMutation({
+  // Mutation for logging out
+  const logoutMutation = useMutation({
     mutationFn: logout,
     onSuccess: () => {
       queryClient.clear();
@@ -104,12 +100,73 @@ const Profile = () => {
         variant: "destructive",
       });
     },
-    retry: 1
+    retry: 1,
   });
 
-  const logoutHandler = () => {
-    handleLogout.mutate();
-  };
+  // Memoized logout handler
+  const logoutHandler = useCallback(() => {
+    logoutMutation.mutate();
+  }, [logoutMutation]);
+
+  // Memoize the rendered profile details so they only recalc when userProfile changes
+  const profileContent = useMemo(
+    () => (
+      <CardContent className="space-y-4">
+        <div className="flex items-center space-x-4">
+          <User className="w-6 h-6 text-gray-500" />
+          <div>
+            <p className="font-kreon text-base md:text-lg font-medium">Name:</p>
+            <p className="font-kreon text-base md:text-lg font-normal bg-grey-800">
+              {userProfile.name}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center space-x-4">
+          <Mail className="w-6 h-6 text-gray-500" />
+          <div>
+            <p className="font-kreon text-base md:text-lg font-medium">
+              Email:
+            </p>
+            <p className="font-kreon text-base md:text-lg font-normal bg-grey-800">
+              {userProfile.email}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center space-x-4">
+          <MapPin className="w-6 h-6 text-gray-500" />
+          <div>
+            <p className="font-kreon text-base md:text-lg font-medium">
+              Address:
+            </p>
+            <p className="font-kreon text-base md:text-lg font-normal bg-grey-800">
+              {userProfile.address}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center space-x-4">
+          <Phone className="w-6 h-6 text-gray-500" />
+          <div>
+            <p className="font-kreon text-base md:text-lg font-medium">
+              Phone:
+            </p>
+            <p className="font-kreon text-base md:text-lg font-normal bg-grey-800">
+              {userProfile.phone_no}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-start space-x-4">
+          <FileText className="w-6 h-6 text-gray-500 mt-1" />
+          <div>
+            <p className="font-kreon text-base md:text-lg font-medium">Bio:</p>
+            <p className="font-kreon text-base md:text-lg font-normal bg-grey-800">
+              {userProfile.bio}
+            </p>
+          </div>
+        </div>
+      </CardContent>
+    ),
+    [userProfile]
+  );
 
   if (isLoading) {
     return <LoadingOverlay />;
@@ -119,9 +176,9 @@ const Profile = () => {
     return (
       <div>
         <Card>
-          <CardTitle>{`Error while fetching user details :(`}</CardTitle>
+          <CardTitle>Error while fetching user details :(</CardTitle>
           <CardDescription>
-            Their was an error while fetching user details
+            There was an error while fetching user details
           </CardDescription>
         </Card>
       </div>
@@ -136,63 +193,7 @@ const Profile = () => {
             Profile Dashboard
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center space-x-4">
-            <User className="w-6 h-6 text-gray-500" />
-            <div>
-              <p className="font-kreon text-base md:text-lg font-medium">
-                Name:
-              </p>
-              <p className="font-kreon text-base md:text-lg font-normal bg-grey-800">
-                {userProfile.name}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center space-x-4">
-            <Mail className="w-6 h-6 text-gray-500" />
-            <div>
-              <p className="font-kreon text-base md:text-lg font-medium">
-                Email:
-              </p>
-              <p className="font-kreon text-base md:text-lg font-normal bg-grey-800">
-                {userProfile.email}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center space-x-4">
-            <MapPin className="w-6 h-6 text-gray-500" />
-            <div>
-              <p className="font-kreon text-base md:text-lg font-medium">
-                Address:
-              </p>
-              <p className="font-kreon text-base md:text-lg font-normal bg-grey-800">
-                {userProfile.address}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center space-x-4">
-            <Phone className="w-6 h-6 text-gray-500" />
-            <div>
-              <p className="font-kreon text-base md:text-lg font-medium">
-                Phone:
-              </p>
-              <p className="font-kreon text-base md:text-lg font-normal bg-grey-800">
-                {userProfile.phone_no}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-start space-x-4">
-            <FileText className="w-6 h-6 text-gray-500 mt-1" />
-            <div>
-              <p className="font-kreon text-base md:text-lg font-medium">
-                Bio:
-              </p>
-              <p className="font-kreon text-base md:text-lg font-normal bg-grey-800">
-                {userProfile.bio}
-              </p>
-            </div>
-          </div>
-        </CardContent>
+        {profileContent}
         <CardFooter className="flex justify-between mt-8">
           <Button
             onClick={() => setIsModalOpen(true)}
@@ -205,10 +206,9 @@ const Profile = () => {
             onClick={logoutHandler}
             className="font-kreon font-normal"
           >
-            {handleLogout.isLoading ? "logging out" : "log out"}
+            {logoutMutation.isLoading ? "logging out" : "log out"}
           </Button>
         </CardFooter>
-
         <ProfileUpdateModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}

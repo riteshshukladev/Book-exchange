@@ -1,5 +1,5 @@
 // ExchangePage.jsx
-import React, { useEffect } from "react";
+import React, { useMemo, useCallback } from "react";
 import {
   Card,
   CardHeader,
@@ -16,23 +16,52 @@ import IncomingExchanges from "../exchanges/IncomingExchanges";
 import { fetchExchangeDetails } from "../../services/userExchangeService";
 import { useQueryClient } from "@tanstack/react-query";
 import LoadingOverlay from "../layout/LoadingOverlay";
+import shallow from "zustand/shallow";
 
 const ExchangesPage = () => {
-  const { currentRadioState, setCurrentRadioState } = useExchange();
   const queryClient = useQueryClient();
 
-  // Load initial exchange details using react-query
+  // Use a selector to subscribe only to needed values
+  const { currentRadioState, setCurrentRadioState } = useExchange(
+    (state) => ({
+      currentRadioState: state.currentRadioState,
+      setCurrentRadioState: state.setCurrentRadioState,
+    }),
+    shallow
+  );
+
+  // Memoize the radio change callback
+  const handleRadioChange = useCallback(
+    (value) => {
+      setCurrentRadioState(value);
+    },
+    [setCurrentRadioState]
+  );
+
   const { data: exchangeData, isLoading, error } = useQuery({
     queryKey: ["exchanges"],
     queryFn: fetchExchangeDetails,
   });
 
+  // Memoize the section content so it only recalculates when its dependencies change
+  const exchangeComponent = useMemo(() => {
+    if (isLoading) {
+      return <LoadingOverlay />;
+    }
+    if (error) {
+      return <p>Error: {error.message}</p>;
+    }
+    return currentRadioState === "incoming" ? (
+      <IncomingExchanges requests={exchangeData} />
+    ) : (
+      <RequestedExchange requests={exchangeData} />
+    );
+  }, [isLoading, error, currentRadioState, exchangeData]);
 
   return (
     <div className="max-w-[1540px] mx-auto py-4 sm:py-8 px-4 md:px-6">
       <header className="mb-8 flex flex-col justify-center items-center sm:flex-row sm:justify-between flex-wrap gap-2">
-        {/* <h1 className="text-3xl font-bold">Book Exchange Requests</h1> */}
-        <div className="mt-4 flex items-center justify-between ">
+        <div className="mt-4 flex items-center justify-between">
           <div className="flex gap-4 text-sm font-medium">
             <span className="text-yellow-500 font-kreon text-base font-medium">Pending</span>
             <span className="text-green-500 font-kreon text-base font-medium">Accepted</span>
@@ -42,14 +71,14 @@ const ExchangesPage = () => {
         <div className="flex gap-2">
           <RadioGroup
             value={currentRadioState}
-            onValueChange={(value) => setCurrentRadioState(value)}
+            onValueChange={handleRadioChange}
             className="flex items-center gap-2"
           >
             <Label
               htmlFor="incoming"
               className="border cursor-pointer rounded-md px-4 py-2 flex items-center gap-2 [&:has(:checked)]:bg-muted font-kreon text-base font-medium"
             >
-              <RadioGroupItem id="incoming" value="incoming" className=""/>
+              <RadioGroupItem id="incoming" value="incoming" className="" />
               Incoming
             </Label>
             <Label
@@ -62,18 +91,7 @@ const ExchangesPage = () => {
           </RadioGroup>
         </div>
       </header>
-
-      <section>
-        {isLoading ? (
-          <LoadingOverlay/>
-        ) : error ? (
-          <p>Error: {error.message}</p>
-        ) : currentRadioState === "incoming" ? (
-          <IncomingExchanges requests={exchangeData} />
-        ) : (
-          <RequestedExchange requests={exchangeData} />
-        )}
-      </section>
+      <section>{exchangeComponent}</section>
     </div>
   );
 };

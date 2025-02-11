@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useEffect, useMemo, useCallback} from "react";
 import * as Yup from "yup";
 import { signUpSchema } from "../../helpers/validationSchema";
 import { useMutation } from "@tanstack/react-query";
@@ -31,44 +31,61 @@ const SignUpForm = () => {
 
   const mutation = useMutation({
     mutationFn: AuthHelper,
-    onSuccess: (data) => {
-      setIsLoading(false);
-      if (data.status === 200) {
-        navigate("/home", { replace: true });
-      }
-    },
-    onError: (err) => {
-      setError({ general: err.message || "Signup failed" });
-      setIsLoading(false);
-    },
+    onSuccess: useCallback(
+      (data) => {
+        setIsLoading(false);
+        if (data.status === 200) {
+          navigate("/home", { replace: true });
+        }
+      },
+      [navigate, setIsLoading]
+    ),
+    onError: useCallback(
+      (err) => {
+        setError({ general: err.message || "Signup failed" });
+        setIsLoading(false);
+      },
+      [setError, setIsLoading]
+    ),
   });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    try {
-      const validateData = await signUpSchema.validate(
-        { username, email, password, confirmPassword },
-        { abortEarly: false }
-      );
+  const handleSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
+      setIsLoading(true);
+      try {
+        const validateData = await signUpSchema.validate(
+          { username, email, password, confirmPassword },
+          { abortEarly: false }
+        );
 
-      mutation.mutate({
-        actionType: "signup",
-        data: validateData,
-      });
-    } catch (validationErrors) {
-      if (validationErrors instanceof Yup.ValidationError) {
-        const errorObject = {};
-        validationErrors.inner.forEach((error) => {
-          errorObject[error.path] = error.message;
+        mutation.mutate({
+          actionType: "signup",
+          data: validateData,
         });
-        setError(errorObject);
-      } else {
-        setError({ general: "An unexpected error occurred" });
+      } catch (validationErrors) {
+        if (validationErrors instanceof Yup.ValidationError) {
+          const errorObject = {};
+          validationErrors.inner.forEach((error) => {
+            errorObject[error.path] = error.message;
+          });
+          setError(errorObject);
+        } else {
+          setError({ general: "An unexpected error occurred" });
+        }
+        setIsLoading(false);
       }
-      setIsLoading(false);
-    }
-  };
+    },
+    [
+      username,
+      email,
+      password,
+      confirmPassword,
+      mutation,
+      setError,
+      setIsLoading,
+    ]
+  );
 
   return (
     <div className="flex flex-col">
@@ -113,7 +130,9 @@ const SignUpForm = () => {
             />
           </div>
           {error.email && (
-            <p className="mt-2 text-sm text-red-600 font-kreon">{error.email}</p>
+            <p className="mt-2 text-sm text-red-600 font-kreon">
+              {error.email}
+            </p>
           )}
         </div>
 
@@ -135,7 +154,9 @@ const SignUpForm = () => {
             />
           </div>
           {error.password && (
-            <p className="mt-2 text-sm text-red-600 font-kreon">{error.password}</p>
+            <p className="mt-2 text-sm text-red-600 font-kreon">
+              {error.password}
+            </p>
           )}
         </div>
 
@@ -157,7 +178,9 @@ const SignUpForm = () => {
             />
           </div>
           {error.confirmPassword && (
-            <p className="mt-2 text-sm text-red-600 font-kreon">{error.confirmPassword}</p>
+            <p className="mt-2 text-sm text-red-600 font-kreon">
+              {error.confirmPassword}
+            </p>
           )}
         </div>
 
@@ -171,7 +194,9 @@ const SignUpForm = () => {
         </div>
 
         {error.general && (
-          <p className="mt-2 text-sm text-red-600 font-kreon">{error.general}</p>
+          <p className="mt-2 text-sm text-red-600 font-kreon">
+            {error.general}
+          </p>
         )}
       </form>
       <div className="pt-3">
