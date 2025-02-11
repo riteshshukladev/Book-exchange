@@ -120,7 +120,7 @@ const FilterBooks = () => {
 
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-[1540px] mx-auto">
       <Card className="w-auto bg-slate-50">
         {/* <CardHeader>
           <CardTitle className="">Filter according to your need!</CardTitle>

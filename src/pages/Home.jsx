@@ -3,23 +3,25 @@ import { Outlet, Link, useLocation } from "react-router-dom";
 import { Toaster } from "../components/ui/toaster";
 import { useQuery } from "@tanstack/react-query";
 import { fetchPendingRequests } from "@/services/authService";
+import { useExchange } from "@/store/ExhangeStore";
 
 const Home = () => {
+  const {pendingCount} = useExchange();
   const location = useLocation();
-  const [showCount, setShowCount] = useState(true);
-  const {
-    data: requestCount,
-    isLoading,
-    isError,
-    error,
-  } = useQuery({
-    queryKey: ["pendingRequests"],
-    queryFn: fetchPendingRequests,
-  });
+  // const [showCount, setShowCount] = useState(true);
+  // const {
+  //   data: requestCount,
+  //   isLoading,
+  //   isError,
+  //   error,
+  // } = useQuery({
+  //   queryKey: ["pendingRequests"],
+  //   queryFn: fetchPendingRequests,
+  // });
 
-  useEffect(() => {
-    setShowCount(location.pathname !== "/exchanges");
-  }, [location.pathname]);
+  // useEffect(() => {
+  //   setShowCount(location.pathname !== "/exchanges");
+  // }, [location.pathname]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -45,11 +47,10 @@ const Home = () => {
                         }`}
                       >
                         {item}
-                        {item === "exchanges" &&
-                          showCount &&
-                          requestCount > 0 && (
+                        {item === "record" &&
+                          pendingCount > 0 && (
                             <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                              {requestCount}
+                              {pendingCount}
                             </span>
                           )}
                       </Link>

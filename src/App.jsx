@@ -11,6 +11,7 @@ import FilterBooks from "./components/user-pages/FilterBooks";
 import Profile from "./components/user-pages/Profile";
 import ExchangesPage from "./components/user-pages/ExchangesPage";
 import ExchangeRequest from "./components/exchanges/ExchangeRequest";
+import GlobalSseNotifications from "./components/layout/GlobalSseNoticification";
 
 const queryClient = new QueryClient();
 
@@ -18,13 +19,13 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
+        <GlobalSseNotifications />
         <Routes>
-          {/* Redirect root to login */}
           <Route path="/" element={<Navigate to="/login" replace />} />
-          {/* Public routes */}
+
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          {/* Protected routes */}
+
           <Route
             path="/*"
             element={
@@ -39,8 +40,10 @@ function App() {
             <Route path="finds" element={<MatchMaking />} />
             <Route path="profile" element={<Profile />} />
             <Route path="record" element={<ExchangesPage />} />
-            <Route path="exchange-request/:bookId" element={<ExchangeRequest />} /> 
-
+            <Route
+              path="exchange-request/:bookId"
+              element={<ExchangeRequest />}
+            />
           </Route>
         </Routes>
       </BrowserRouter>

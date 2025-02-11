@@ -10,6 +10,7 @@ import {
   CardHeader,
   CardContent,
   CardFooter,
+  
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useBookList } from "../../store/bookListingStore";
@@ -76,7 +77,7 @@ const ExchangeRequest = () => {
   }
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="container max-w-[1540px] mx-auto p-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
         {/* Left Column - Selected Book */}
         <div className="flex flex-col gap-4 h-full">

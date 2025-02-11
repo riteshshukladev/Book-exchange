@@ -6,4 +6,6 @@ export const useExchange = create((set) => ({
     setCurrentRadioState: (value) => set({ currentRadioState: value }),
     
     // IncomingRequests(()=>)
+    pendingCount: 0,
+    setPendingCount: (value) => set({ pendingCount: value }),
 }))

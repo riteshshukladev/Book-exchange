@@ -1,4 +1,5 @@
-import React from "react";
+// ExchangePage.jsx
+import React, { useEffect } from "react";
 import {
   Card,
   CardHeader,
@@ -14,32 +15,28 @@ import RequestedExchange from "../exchanges/RequestedExchange";
 import IncomingExchanges from "../exchanges/IncomingExchanges";
 import { fetchExchangeDetails } from "../../services/userExchangeService";
 import { useQueryClient } from "@tanstack/react-query";
+import LoadingOverlay from "../layout/LoadingOverlay";
 
 const ExchangesPage = () => {
   const { currentRadioState, setCurrentRadioState } = useExchange();
   const queryClient = useQueryClient();
 
-  const { data: exchangeData, isLoading, error, refetch } = useQuery({
+  // Load initial exchange details using react-query
+  const { data: exchangeData, isLoading, error } = useQuery({
     queryKey: ["exchanges"],
     queryFn: fetchExchangeDetails,
-    // staleTime: 5 * 60 * 1000, // 5 minutes
-    // cacheTime: 10 * 60 * 1000, // 10 minutes
-    refetchInterval: 5000,
   });
 
-  const handleExchangeUpdate = () => {
-    queryClient.invalidateQueries(["exchanges"]);
-  };
 
   return (
-    <div className="container mx-auto py-12 px-4 md:px-6">
-      <header className="mb-8 flex justify-between flex-wrap">
-        <h1 className="text-3xl font-bold">Book Exchange Requests</h1>
-        <div className="mt-4 flex items-center justify-between">
+    <div className="max-w-[1540px] mx-auto py-4 sm:py-8 px-4 md:px-6">
+      <header className="mb-8 flex flex-col justify-center items-center sm:flex-row sm:justify-between flex-wrap gap-2">
+        {/* <h1 className="text-3xl font-bold">Book Exchange Requests</h1> */}
+        <div className="mt-4 flex items-center justify-between ">
           <div className="flex gap-4 text-sm font-medium">
-            <span className="text-yellow-500">Pending</span>
-            <span className="text-green-500">Accepted</span>
-            <span className="text-red-500">Declined</span>
+            <span className="text-yellow-500 font-kreon text-base font-medium">Pending</span>
+            <span className="text-green-500 font-kreon text-base font-medium">Accepted</span>
+            <span className="text-red-500 font-kreon text-base font-medium">Declined</span>
           </div>
         </div>
         <div className="flex gap-2">
@@ -50,14 +47,14 @@ const ExchangesPage = () => {
           >
             <Label
               htmlFor="incoming"
-              className="border cursor-pointer rounded-md px-4 py-2 flex items-center gap-2 [&:has(:checked)]:bg-muted"
+              className="border cursor-pointer rounded-md px-4 py-2 flex items-center gap-2 [&:has(:checked)]:bg-muted font-kreon text-base font-medium"
             >
-              <RadioGroupItem id="incoming" value="incoming" />
+              <RadioGroupItem id="incoming" value="incoming" className=""/>
               Incoming
             </Label>
             <Label
               htmlFor="my-requests"
-              className="border cursor-pointer rounded-md px-4 py-2 flex items-center gap-2 [&:has(:checked)]:bg-muted"
+              className="border cursor-pointer rounded-md px-4 py-2 flex items-center gap-2 [&:has(:checked)]:bg-muted font-kreon text-base font-medium"
             >
               <RadioGroupItem id="my-requests" value="my-requests" />
               My Requests
@@ -68,15 +65,13 @@ const ExchangesPage = () => {
 
       <section>
         {isLoading ? (
-          <p>Loading...</p>
+          <LoadingOverlay/>
         ) : error ? (
           <p>Error: {error.message}</p>
+        ) : currentRadioState === "incoming" ? (
+          <IncomingExchanges requests={exchangeData} />
         ) : (
-          currentRadioState === "incoming" ? (
-            <IncomingExchanges requests={exchangeData} onExchangeUpdate={handleExchangeUpdate}/>
-          ) : (
-            <RequestedExchange requests={exchangeData} onExchangeUpdate={handleExchangeUpdate}/>
-          )
+          <RequestedExchange requests={exchangeData} />
         )}
       </section>
     </div>

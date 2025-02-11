@@ -72,8 +72,8 @@ const MatchMaking = () => {
   }
 
   return (
-    <div>
-      <Card className="w-auto bg-slate-50">
+    <div className = "max-w-[1540px] mx-auto">
+      <Card className=" bg-slate-50">
         <CardHeader>
           <CardTitle className="font-2xl font-semibold text-black font-josephine p-6">
             The best matches for you!!

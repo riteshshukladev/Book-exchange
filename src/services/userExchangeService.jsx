@@ -63,7 +63,7 @@ export const fetchExchangeDetails = async () => {
   }
 };
 
-export const declineBookExchange = async (book1, book2) => {
+export const declineBookExchange = async ({ book1, book2 }) => {
   try {
     const response = await fetch(
       `${import.meta.env.VITE_API_URL}/api/exchange/decline-exchange`,
@@ -94,7 +94,7 @@ export const declineBookExchange = async (book1, book2) => {
   }
 };
 
-export const approveBookExchange = async (book1, book2) => {
+export const approveBookExchange = async ({ book1, book2 }) => {
   try {
     const response = await fetch(
       `${import.meta.env.VITE_API_URL}/api/exchange/accept-exchange`,
