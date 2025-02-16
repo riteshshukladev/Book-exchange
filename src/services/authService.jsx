@@ -22,6 +22,8 @@ export const AuthHelper = async ({ actionType, data, signal }) => {
       throw new Error(responseData.message || "An error occurred");
     }
 
+    console.log(`response in client auth route ${responseData}`);
+
     return responseData;
   } catch (error) {
     // Handle network errors or JSON parsing errors
