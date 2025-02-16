@@ -22,7 +22,7 @@ export const AuthHelper = async ({ actionType, data, signal }) => {
       throw new Error(responseData.message || "An error occurred");
     }
 
-    console.log(`response in client auth route ${responseData}`);
+    console.log(`response in client auth route ${responseData.status} and ${responseData.message}`);
 
     return responseData;
   } catch (error) {
